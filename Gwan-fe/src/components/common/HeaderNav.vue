@@ -2,8 +2,8 @@
   <header class="header">
     <h1 class="logo">SSAFIT</h1>
     <nav class="nav-menu">
-      <a href="/">🏠 홈</a>
-      <a href="/exercise">💪 운동</a>
+      <RouterLink :to="{name : 'home'}">🏠 홈</RouterLink>
+      <RouterLink :to="{name : 'exercises'}">💪 운동</RouterLink>
       <a href="/board">👥 커뮤니티</a>
       <a href="#">❓ 도움말</a>
     </nav>
