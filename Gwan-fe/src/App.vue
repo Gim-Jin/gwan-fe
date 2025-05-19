@@ -1,10 +1,10 @@
 <template>
     <div>
-        <h2>Main</h2>
+        <HeaderNav/>
+        <main><router-view/></main>
+        <Footer/>
     </div>
-    <HeaderNav/>
-    <router-view/>
-    <Footer/>
+    
 </template>
 
 <script setup>
@@ -13,5 +13,11 @@ import Footer from './components/common/Footer.vue'
 
 </script>
 
-<style scoped>
+<style>
+    html, body, #app {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    }
 </style>
