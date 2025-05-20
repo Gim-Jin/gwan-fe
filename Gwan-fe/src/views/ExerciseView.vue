@@ -8,6 +8,7 @@
 import ExerciseVideoList from '@/components/exercise/ExerciseVideoList.vue';
 
 
+
 </script>
 
 <style scoped>

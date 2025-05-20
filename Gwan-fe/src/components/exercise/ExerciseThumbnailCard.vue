@@ -10,7 +10,7 @@
         <h5 class="card-title">{{ video.title }}</h5>
         <p class="card-text small text-muted">{{ video.targetName }}</p>
       </div>
-      <a :href="video.url" target="_blank" class="btn btn-primary btn-sm mt-3">영상 보기</a>
+      <RouterLink :to="{name : 'exerciseDetail', params : {id : video.exerciseVideoId}}" class="btn btn-primary btn-sm mt-3">영상 보기</RouterLink>
     </div>
   </div>
 </template>
