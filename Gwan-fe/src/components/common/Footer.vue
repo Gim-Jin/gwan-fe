@@ -20,6 +20,18 @@
         </ul>
       </div>
 
+<!-- 고객 지원 섹션 추가 -->
+<div class="footer-column">
+  <h3>고객 지원</h3>
+  <ul>
+    <li><a href="#">이용약관</a></li>
+    <li><a href="#">문의하기</a></li>
+    <li><a href="#">버그 제보</a></li>
+    <li><a href="#">채용 안내</a></li>
+  </ul>
+</div>
+
+
       <div class="footer-column">
         <h3>소셜 미디어</h3>
         <div class="social-icons">
@@ -63,7 +75,7 @@ function subscribe() {
 
 .footer-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   flex-wrap: wrap;
   gap: 2rem;
 }
