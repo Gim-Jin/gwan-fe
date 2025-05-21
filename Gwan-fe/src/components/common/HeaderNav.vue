@@ -1,19 +1,23 @@
 <template>
   <header class="header">
-    <h1 class="logo">SSAFIT</h1>
-    <nav class="nav-menu">
-      <RouterLink :to="{name : 'home'}">🏠 홈</RouterLink>
-      <RouterLink :to="{name : 'exercises'}">💪 운동</RouterLink>
-      <a href="/board">👥 커뮤니티</a>
-      <RouterLink :to="{name : 'myRoutine'}">🏋🏿 나의 루틴</RouterLink>
-    </nav>
-    <div class="nav-actions">
-      <button @click="search">🔍</button>
-      <RouterLink :to="{name : 'signup'}">👤회원가입</RouterLink>
+    <div class="header-left">
+      <h1 class="logo">SSAFIT</h1>
+      <nav class="nav-menu">
+        <RouterLink :to="{name : 'home'}">🏠 홈</RouterLink>
+        <RouterLink :to="{name : 'exercises'}">💪 운동</RouterLink>
+        <a href="/board">👥 커뮤니티</a>
+        <RouterLink :to="{name : 'myRoutine'}">🏋🏿 나의 루틴</RouterLink>
+      </nav>
+    </div>
+
+    <div class="header-right">
+      <input class="search-input" type="text" placeholder="운동을 검색해보세요" />
+      <RouterLink :to="{name : 'signup'}">👤 회원가입</RouterLink>
       <RouterLink :to="{name : 'login'}">🔑 로그인</RouterLink>
     </div>
   </header>
 </template>
+
 
 <script setup>
 function search() {
@@ -35,18 +39,39 @@ function search() {
   right: 0;
   z-index: 1000;
 }
+.search-input {
+  padding: 0.4rem 1rem;
+  width: clamp(120px, 20vw, 280px); /* 최소 120px, 최대 280px, 기준은 20vw */
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #3b82f6;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
 
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
+  margin-right: 1rem;
+  color: #1c1c1c;
 }
 
 .nav-menu {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.2rem;
 }
 
-.nav-actions {
+.header-right {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -65,6 +90,15 @@ button {
 }
 
 .main-content {
-  margin-top: 4rem; /* 헤더 높이만큼 여백 추가 */
+  margin-top: 5rem;
 }
+.search-input {
+  padding: 0.5rem 1rem;
+  width: 250px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 0.9rem;
+}
+
 </style>

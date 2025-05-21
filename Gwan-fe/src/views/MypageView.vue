@@ -33,7 +33,7 @@
   import MyRoutines from '@/components/mypage/MyRoutines.vue'
 //   import MyInfo from '@/components/mypage/MyInfo.vue'
   
-  const tabs = ['찜한 영상', '내 댓글', '운동 루틴', '내 정보']
+  const tabs = ['찜한 영상', '내 댓글', '운동 루틴']
   const currentTab = ref('찜한 영상')
   </script>
   

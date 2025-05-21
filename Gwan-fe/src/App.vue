@@ -32,4 +32,10 @@ import Footer from './components/common/Footer.vue'
         padding-top: 60px;
         flex: 1;
     }
+    /* *:focus {
+        outline: none;
+    }
+    html,body{
+        caret-color: transparent;
+    } */
 </style>
