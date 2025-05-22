@@ -11,7 +11,7 @@
       <div class="text-center mb-4">
         <iframe
           class="video-frame"
-          :src="`https://www.youtube.com/embed/${video.youtubeId}`"
+          :src="`https://www.youtube.com/embed/${exerciseVideoStore.exerciseVideo.youtubeId}`"
           title="YouTube video player"
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -20,30 +20,35 @@
       </div>
 
       <div class="video-content">
-        <h4 class="fw-bold">{{ video.title }}</h4>
-        <p class="text-primary fw-semibold mb-2">{{ video.targetName }}</p>
-        <p class="text-muted">{{ video.description }}</p>
+        <h4 class="fw-bold">{{ exerciseVideoStore.exerciseVideo.title }}</h4>
+        <p class="text-primary fw-semibold mb-2">{{ exerciseVideoStore.exerciseVideo.targetName }}</p>
+        <p class="text-muted">{{ exerciseVideoStore.exerciseVideo.description }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
 
-// 💡 임시 데이터 (실제 상황에서는 prop 또는 API로 받을 것)
-const video = ref({
-  exerciseVideoId: 1,
-  userId: 1,
-  title: '전신 다이어트 최고의 운동 [칼소폭 찐 핵핵매운맛]',
-  url: 'https://youtu.be/Kl9Dmx86Z0Q',
-  youtubeId: 'Kl9Dmx86Z0Q',
-  description: '전신 다이어트 최고의 운동 [칼소폭 찐 핵핵매운맛]의 상세 설명',
-  createdAt: '2025-01-01',
-  updatedAt: '2025-01-01',
-  targetName: '전신',
+
+import { useExerciseVideoStore } from '@/stores/exerciseVideoStore';
+import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+
+
+const exerciseVideoStore = useExerciseVideoStore();
+
+onMounted(() => {
+  const videoId = route.params.id;// PathVariable 가져오는거임
+  exerciseVideoStore.getVideoDetailInfo(videoId);
 })
 
+
+
+
+// 좋아요 관련된 것 같은데 일단 .... 주석처리 ㅠ
 const STORAGE_KEY = 'liked_videos'
 const isLiked = ref(false)
 
@@ -54,6 +59,7 @@ const loadLikedList = () => {
     return []
   }
 }
+
 
 const saveLikedList = (list) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
