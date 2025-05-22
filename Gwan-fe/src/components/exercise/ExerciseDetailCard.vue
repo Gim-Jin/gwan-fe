@@ -29,59 +29,53 @@
 </template>
 
 <script setup>
-
-
 import { useExerciseVideoStore } from '@/stores/exerciseVideoStore';
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
-
-
 const exerciseVideoStore = useExerciseVideoStore();
 
 onMounted(() => {
-  const videoId = route.params.id;// PathVariable 가져오는거임
+  const videoId = route.params.id;
   exerciseVideoStore.getVideoDetailInfo(videoId);
-})
+});
 
-
-
-
-// 좋아요 관련된 것 같은데 일단 .... 주석처리 ㅠ
-const STORAGE_KEY = 'liked_videos'
-const isLiked = ref(false)
+const STORAGE_KEY = 'liked_videos';
+const isLiked = ref(false);
 
 const loadLikedList = () => {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   } catch (e) {
-    return []
+    return [];
   }
-}
-
+};
 
 const saveLikedList = (list) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
-}
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+};
 
 const toggleLike = () => {
-  const list = loadLikedList()
-  const idx = list.indexOf(video.value.exerciseVideoId)
+  const list = loadLikedList();
+  const videoId = exerciseVideoStore.exerciseVideo.exerciseVideoId;
+  const idx = list.indexOf(videoId);
+  
   if (idx === -1) {
-    list.push(video.value.exerciseVideoId)
-    isLiked.value = true
+    list.push(videoId);
+    isLiked.value = true;
   } else {
-    list.splice(idx, 1)
-    isLiked.value = false
+    list.splice(idx, 1);
+    isLiked.value = false;
   }
-  saveLikedList(list)
-}
+  saveLikedList(list);
+};
 
 onMounted(() => {
-  const list = loadLikedList()
-  isLiked.value = list.includes(video.value.exerciseVideoId)
-})
+  const list = loadLikedList();
+  const videoId = exerciseVideoStore.exerciseVideo.exerciseVideoId;
+  isLiked.value = list.includes(videoId);
+});
 </script>
 
 <style scoped>

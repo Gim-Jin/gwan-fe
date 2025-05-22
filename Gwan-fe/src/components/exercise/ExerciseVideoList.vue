@@ -3,17 +3,26 @@
   <h1 class="section-title" style="margin-left:10rem; margin-top:5rem;">전체 영상</h1>
   
   <div class="container px-1 my-5">
-    
+    <ExerciseSearchBar />
     <div class="d-flex justify-content-center">
       <div class="row row-cols-1 row-cols-md-3 gx-5 gy-5" style="max-width: 900px; width: 100%;">
-        <div class="col" v-for="video in videos" :key="video.exerciseVideoId">
+        <div class="col" v-for="video in paginatedVideos" :key="video.exerciseVideoId">
           <ExerciseThumbnailCard :video="video" />
         </div>
       </div>
     </div>
-
-    
-
+    <!-- 페이지네이션 -->
+    <div class="d-flex justify-content-center my-4" v-if="totalPages > 1">
+      <button class="btn btn-outline-primary mx-1" :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">이전</button>
+      <button
+        v-for="page in totalPages"
+        :key="page"
+        class="btn"
+        :class="page === currentPage ? 'btn-primary' : 'btn-outline-primary'"
+        @click="goToPage(page)"
+      >{{ page }}</button>
+      <button class="btn btn-outline-primary mx-1" :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">다음</button>
+    </div>
     <div style="height: 80px;"></div>
   </div>
   </section>
@@ -21,68 +30,46 @@
 
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import ExerciseThumbnailCard from './ExerciseThumbnailCard.vue';
+import { useExerciseVideoStore } from '@/stores/exerciseVideoStore';
+import ExerciseSearchBar from './ExerciseSearchBar.vue';
+import { useRoute } from 'vue-router';
 
-const videos = ref([
-    {
-        exerciseVideoId : 1,
-        userId : 1,
-        title : "그만하고싶어",
-        url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
-        youtubeId : "Kl9Dmx86Z0Q",
-        description : "짱 힘듦",
-        createdAt : "2025-01-01",
-        updatedAt : "205-01-01",
-        targetName : "팔뚝",
-    },
-    {
-        exerciseVideoId : 1,
-        userId : 1,
-        title : "그만하고싶어",
-        url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
-        youtubeId : "Kl9Dmx86Z0Q",
-        description : "짱 힘듦",
-        createdAt : "2025-01-01",
-        updatedAt : "205-01-01",
-        targetName : "팔뚝",
-    },
-    {
-        exerciseVideoId : 1,
-        userId : 1,
-        title : "그만하고싶어",
-        url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
-        youtubeId : "Kl9Dmx86Z0Q",
-        description : "짱 힘듦",
-        createdAt : "2025-01-01",
-        updatedAt : "205-01-01",
-        targetName : "팔뚝",
-    },
-    {
-        exerciseVideoId : 1,
-        userId : 1,
-        title : "그만하고싶어",
-        url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
-        youtubeId : "Kl9Dmx86Z0Q",
-        description : "짱 힘듦",
-        createdAt : "2025-01-01",
-        updatedAt : "205-01-01",
-        targetName : "팔뚝",
-    },
-    {
-        exerciseVideoId : 1,
-        userId : 1,
-        title : "그만하고싶어",
-        url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
-        youtubeId : "Kl9Dmx86Z0Q",
-        description : "짱 힘듦",
-        createdAt : "2025-01-01",
-        updatedAt : "205-01-01",
-        targetName : "팔뚝",
-    },
-    
-])
+const exerciseVideoStore = useExerciseVideoStore();
+const route = useRoute();
 
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+const fetchByTarget = () => {
+  const target = route.query.target;
+  if (target) {
+    exerciseVideoStore.searchExerciseVideos({ target });
+  } else {
+    exerciseVideoStore.getAllExerciseVideoList();
+  }
+  currentPage.value = 1; // 검색/필터 시 첫 페이지로
+};
+
+onMounted(fetchByTarget);
+watch(() => route.query.target, fetchByTarget);
+
+const paginatedVideos = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return exerciseVideoStore.exerciseVideoList.slice(start, start + itemsPerPage);
+});
+
+const totalPages = computed(() =>
+  Math.ceil(exerciseVideoStore.exerciseVideoList.length / itemsPerPage)
+);
+
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
 </script>
 
 <style scoped>
