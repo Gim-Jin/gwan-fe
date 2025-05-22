@@ -12,7 +12,7 @@
     
     <div class="d-flex justify-content-center">
       <div class="row row-cols-1 row-cols-md-3 gx-5 gy-5" style="max-width: 900px; width: 100%;">
-        <div class="col" v-for="video in videoStore.exerciseVideoList" :key="video.exerciseVideoId">
+        <div class="col" v-for="video in videoStore.rankedVideoList" :key="video.exerciseVideoId">
           <ExerciseThumbnailCard :video="video" />
         </div>
       </div>
