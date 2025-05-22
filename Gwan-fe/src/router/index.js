@@ -8,6 +8,7 @@ import MyRoutineView from '@/views/MyRoutineView.vue'
 import Mypage from '@/views/MypageView.vue'
 import ReviseMyInfoView from '@/views/ReviseMyInfoView.vue'
 import MypageView from '@/views/MypageView.vue'
+import SurveyComplete from '@/components/survey/SurveyComplete.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -54,6 +55,11 @@ const router = createRouter({
       path: '/mypage/info-revise',
       name: 'infoRevise',
       component: ReviseMyInfoView,
+    },
+    {
+      path: '/survey/complete',
+      name: 'surveyComplete',
+      component: SurveyComplete
     }
   ],
 })

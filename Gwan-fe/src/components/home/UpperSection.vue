@@ -9,7 +9,7 @@
     >
       <h1 class="fw-bold display-4 mb-3">건강한 삶을 위한 첫 걸음</h1>
       <p class="lead mb-4">SSAFIT과 함께 운동하고 더 나은 삶을 경험하세요.</p>
-      <button class="btn btn-primary btn-lg">운동 시작하기</button>
+      <router-link :to="{name: 'exercises'}" class="btn btn-primary btn-lg">운동 시작하기</router-link>
     </div>
   </section>
 </template>

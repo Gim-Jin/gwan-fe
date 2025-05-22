@@ -2,9 +2,14 @@
 <template>
   <div class="survey-card">
     <p class="step-indicator">Step 3 of 4</p>
-    <h2 class="title">질환 및 수술 이력</h2>
+    <h2 class="title">생활 습관</h2>
 
-    <textarea v-model="formData.history" placeholder="자유롭게 입력해주세요" class="textarea"></textarea>
+    <form class="form">
+      <input v-model="formData.sleepHours" type="number" placeholder="수면 시간 (시간)" />
+      <input v-model="formData.dailyActivity" type="text" placeholder="일상 활동 (예: 평일에 사무실에서 10시간씩 앉아있음)" />
+      <input v-model="formData.exerciseExperience" type="text" placeholder="운동 경험 (예: 웨이트 주 4~5회, 수영 주 3회)" />
+
+    </form>
 
     <div class="btn-group">
       <button @click="$emit('prev')">이전</button>
@@ -13,23 +18,13 @@
   </div>
 </template>
 
-<script>
-import { reactive } from 'vue'
-
-export default {
-  setup() {
-    const formData = reactive({
-      history: ''
-    })
-
-    return {
-      formData
-    }
-  }
-}
+<script setup>
+import {useSurveyStore} from '@/stores/userSurveyStore'
+const {formData} = useSurveyStore();
 </script>
 
 <style scoped>
 @import './survey-styles.css';
 </style>
+
 
