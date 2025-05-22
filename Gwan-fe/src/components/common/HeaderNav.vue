@@ -3,17 +3,17 @@
     <div class="header-left">
       <h1 class="logo">SSAFIT</h1>
       <nav class="nav-menu">
-        <RouterLink :to="{name : 'home'}">🏠 홈</RouterLink>
-        <RouterLink :to="{name : 'exercises'}">💪 운동</RouterLink>
-        <a href="/board">👥 커뮤니티</a>
-        <RouterLink :to="{name : 'myRoutine'}">🏋🏿 나의 루틴</RouterLink>
+        <RouterLink :to="{name : 'home'}"><i class="bi bi-house text-primary icon-large"></i> 홈</RouterLink>
+        <RouterLink :to="{name : 'exercises'}"><i class="bi bi-lightning-charge text-danger icon-large"></i> 운동</RouterLink>
+        <a href="/board"><i class="bi bi-people text-success icon-large"></i> 커뮤니티</a>
+        <RouterLink :to="{name : 'myRoutine'}"><i class="bi bi-trophy text-warning icon-large"></i> 나의 루틴</RouterLink>
       </nav>
     </div>
 
     <div class="header-right">
       <input class="search-input" type="text" placeholder="운동을 검색해보세요" />
-      <RouterLink :to="{name : 'signup'}">👤 회원가입</RouterLink>
-      <RouterLink :to="{name : 'login'}">🔑 로그인</RouterLink>
+      <RouterLink :to="{name : 'signup'}"><i class="bi bi-person text-primary icon-large"></i> 회원가입</RouterLink>
+      <RouterLink :to="{name : 'login'}"><i class="bi bi-key text-info icon-large"></i> 로그인</RouterLink>
     </div>
   </header>
 </template>
@@ -101,4 +101,30 @@ button {
   font-size: 0.9rem;
 }
 
+.icon-large {
+  font-size: 1.3rem;
+  vertical-align: middle;
+  margin-right: 0.2rem;
+}
+
+/* 부트스트랩 색상 클래스가 없는 경우를 대비한 커스텀 색상 */
+.text-primary {
+  color: #0d6efd;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.text-success {
+  color: #198754;
+}
+
+.text-warning {
+  color: #ffc107;
+}
+
+.text-info {
+  color: #0dcaf0;
+}
 </style>

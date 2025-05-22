@@ -26,7 +26,7 @@ export default {
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 0 10px #ddd;
-  max-width: 500px;
+  max-width: 1000px;
   margin: auto;
 }
 .step {

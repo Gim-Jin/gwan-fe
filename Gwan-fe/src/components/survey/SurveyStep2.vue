@@ -1,18 +1,22 @@
-<!-- SurveyStep2.vue -->
 <template>
   <div class="survey-card">
     <p class="step-indicator">Step 2 of 4</p>
-    <h2 class="title">생활 습관</h2>
+    <h2 class="title">기본 정보</h2>
 
     <form class="form">
-      <input v-model="formData.sleep" type="number" placeholder="수면 시간 (시간 단위)" />
-      <input v-model="formData.activity" type="text" placeholder="일상 활동 (예: 컴퓨터 12시간)" />
-      <input v-model="formData.workout" type="text" placeholder="운동 경험 (예: 웨이트 주 4~5회)" />
-      <select v-model="formData.prefer">
-        <option disabled value="">운동 선호 여부</option>
-        <option>있음</option>
-        <option>없음</option>
-      </select>
+      <input v-model="formData.age" type="number" placeholder="나이를 입력하세요" />
+      <input v-model="formData.height" type="number" placeholder="키를 입력하세요 (cm)" />
+      <input v-model="formData.weight" type="number" placeholder="몸무게를 입력하세요 (kg)" />
+      <div class="radio-group">
+        <label>
+          <input type="radio" value="남성" v-model="formData.gender" />
+          남성
+        </label>
+        <label>
+          <input type="radio" value="여성" v-model="formData.gender" />
+          여성
+        </label>
+      </div>
     </form>
 
     <div class="btn-group">
@@ -22,27 +26,16 @@
   </div>
 </template>
 
-<script>
-import { reactive } from 'vue'
-
-export default {
-  setup() {
-    const formData = reactive({
-      sleep: '',
-      activity: '',
-      workout: '',
-      prefer: ''
-    })
-
-    return {
-      formData
-    }
-  }
-}
+<script setup>
+import {useSurveyStore} from '@/stores/userSurveyStore'
+const {formData} = useSurveyStore();
 </script>
-
 <style scoped>
 @import './survey-styles.css';
+.radio-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
 </style>
-
 

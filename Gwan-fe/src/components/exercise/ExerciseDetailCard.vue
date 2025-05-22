@@ -1,6 +1,11 @@
 <template>
   <div class="exercise-detail container my-5">
-    <h2 class="mb-4">영상 상세보기</h2>
+    <h2 class="mb-4 d-flex justify-content-between align-items-center">
+      영상 상세보기
+      <button class="btn-like" @click="toggleLike" :aria-pressed="isLiked.toString()">
+        <i :class="isLiked ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'" class="like-icon"></i>
+      </button>
+    </h2>
 
     <div class="card shadow-sm p-4 rounded-4 border-0">
       <div class="text-center mb-4">
@@ -24,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 // 💡 임시 데이터 (실제 상황에서는 prop 또는 API로 받을 것)
 const video = ref({
@@ -37,6 +42,39 @@ const video = ref({
   createdAt: '2025-01-01',
   updatedAt: '2025-01-01',
   targetName: '전신',
+})
+
+const STORAGE_KEY = 'liked_videos'
+const isLiked = ref(false)
+
+const loadLikedList = () => {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+  } catch (e) {
+    return []
+  }
+}
+
+const saveLikedList = (list) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list))
+}
+
+const toggleLike = () => {
+  const list = loadLikedList()
+  const idx = list.indexOf(video.value.exerciseVideoId)
+  if (idx === -1) {
+    list.push(video.value.exerciseVideoId)
+    isLiked.value = true
+  } else {
+    list.splice(idx, 1)
+    isLiked.value = false
+  }
+  saveLikedList(list)
+}
+
+onMounted(() => {
+  const list = loadLikedList()
+  isLiked.value = list.includes(video.value.exerciseVideoId)
 })
 </script>
 
@@ -59,5 +97,21 @@ const video = ref({
 
 .card {
   background-color: #ffffff;
+}
+
+.btn-like {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0;
+}
+
+.btn-like:hover .bi-heart {
+  color: #dc3545;
+}
+
+.like-icon {
+  transition: color 0.2s;
 }
 </style>
