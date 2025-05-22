@@ -6,43 +6,23 @@
         <h2>회원가입</h2>
       </div>
 
-      <form class="signup-form">
-        <div class="form-group">
-          <label for="loginId">아이디</label>
-          <input type="text" id="loginId" placeholder="아이디를 입력하세요" />
+      <form class="signup-form" @submit="submit">
+        <div class="form-group" v-for="field in fields" :key="field.key">
+          <label :for="field.key">{{ field.label }}</label>
+          <input
+            :type="field.type"
+            :id="field.key"
+            :placeholder="field.placeholder"
+            v-model="form[field.key]"
+            :required="field.required !== false"
+            :disabled="field.disabled"
+          />
         </div>
 
-        <div class="form-group">
-          <label for="email">이메일</label>
-          <input type="email" id="email" placeholder="이메일 주소를 입력하세요" />
-        </div>
-
-        <div class="form-group">
-          <label for="password">비밀번호</label>
-          <input type="password" id="password" placeholder="비밀번호를 입력하세요" />
-        </div>
-
-        <div class="form-group">
-          <label for="confirmPassword">비밀번호 확인</label>
-          <input type="password" id="confirmPassword" placeholder="비밀번호를 다시 입력하세요" />
-        </div>
-
-        <div class="form-group">
-          <label for="nickname">닉네임</label>
-          <input type="text" id="nickname" placeholder="사용할 닉네임을 입력하세요" />
-        </div>
-
-        <div class="form-group">
-          <label for="name">이름</label>
-          <input type="text" id="name" placeholder="실명을 입력하세요" />
-        </div>
-
-        <div class="form-group">
-          <label for="age">나이</label>
-          <input type="number" id="age" placeholder="나이를 입력하세요" />
-        </div>
-
-        <button type="submit" class="signup-btn">가입하기</button>
+        <p v-if="errorMsg" class="text-danger small mb-2">{{ errorMsg }}</p>
+        <button type="submit" class="signup-btn" :disabled="loading">
+          {{ loading ? '처리 중...' : '가입하기' }}
+        </button>
       </form>
 
       <div class="signup-footer">
@@ -53,7 +33,52 @@
 </template>
 
 <script setup>
+import { reactive, ref } from 'vue'
+import { signup } from '@/api/auth'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+const form = reactive({
+  loginUserId: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  nickname: '',
+  name: '',
+  role: 'GENERAL'
+})
+
+const loading = ref(false)
+const errorMsg = ref('')
+
+const fields = [
+  { key: 'loginUserId', label: '아이디', type: 'text', placeholder: '아이디를 입력하세요' },
+  { key: 'email', label: '이메일', type: 'email', placeholder: '이메일 주소를 입력하세요' },
+  { key: 'password', label: '비밀번호', type: 'password', placeholder: '비밀번호를 입력하세요' },
+  { key: 'confirmPassword', label: '비밀번호 확인', type: 'password', placeholder: '비밀번호를 다시 입력하세요' },
+  { key: 'nickname', label: '닉네임', type: 'text', placeholder: '사용할 닉네임을 입력하세요' },
+  { key: 'name', label: '이름', type: 'text', placeholder: '실명을 입력하세요' },
+]
+
+const submit = async (e) => {
+  e.preventDefault()
+  errorMsg.value = ''
+  if (form.password !== form.confirmPassword) {
+    errorMsg.value = '비밀번호 확인이 일치하지 않습니다.'
+    return
+  }
+  loading.value = true
+  try {
+    const { confirmPassword, ...signupData } = form
+    await signup(signupData)
+    alert('회원가입 완료! 로그인 해주세요')
+    router.push({ name: 'login' })
+  } catch (err) {
+    errorMsg.value = err.response?.data?.message || '회원가입 실패'
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <style scoped>
