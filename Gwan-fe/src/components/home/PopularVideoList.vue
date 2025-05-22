@@ -12,7 +12,7 @@
     
     <div class="d-flex justify-content-center">
       <div class="row row-cols-1 row-cols-md-3 gx-5 gy-5" style="max-width: 900px; width: 100%;">
-        <div class="col" v-for="video in videos" :key="video.exerciseVideoId">
+        <div class="col" v-for="video in videoStore.exerciseVideoList" :key="video.exerciseVideoId">
           <ExerciseThumbnailCard :video="video" />
         </div>
       </div>
@@ -27,67 +27,80 @@
 
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import ExerciseThumbnailCard from '@/components/exercise/ExerciseThumbnailCard.vue';
+import { useExerciseVideoStore } from '@/stores/exerciseVideoStore';
 
-const videos = ref([
-    {
-        exerciseVideoId : 1,
-        userId : 1,
-        title : "그만하고싶어",
-        url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
-        youtubeId : "Kl9Dmx86Z0Q",
-        description : "짱 힘듦",
-        createdAt : "2025-01-01",
-        updatedAt : "205-01-01",
-        targetName : "팔뚝",
-    },
-    {
-        exerciseVideoId : 1,
-        userId : 1,
-        title : "그만하고싶어",
-        url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
-        youtubeId : "Kl9Dmx86Z0Q",
-        description : "짱 힘듦",
-        createdAt : "2025-01-01",
-        updatedAt : "205-01-01",
-        targetName : "팔뚝",
-    },
-    {
-        exerciseVideoId : 1,
-        userId : 1,
-        title : "그만하고싶어",
-        url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
-        youtubeId : "Kl9Dmx86Z0Q",
-        description : "짱 힘듦",
-        createdAt : "2025-01-01",
-        updatedAt : "205-01-01",
-        targetName : "팔뚝",
-    },
-    {
-        exerciseVideoId : 1,
-        userId : 1,
-        title : "그만하고싶어",
-        url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
-        youtubeId : "Kl9Dmx86Z0Q",
-        description : "짱 힘듦",
-        createdAt : "2025-01-01",
-        updatedAt : "205-01-01",
-        targetName : "팔뚝",
-    },
-    {
-        exerciseVideoId : 1,
-        userId : 1,
-        title : "그만하고싶어",
-        url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
-        youtubeId : "Kl9Dmx86Z0Q",
-        description : "짱 힘듦",
-        createdAt : "2025-01-01",
-        updatedAt : "205-01-01",
-        targetName : "팔뚝",
-    },
+
+const videoStore = useExerciseVideoStore();
+
+onMounted(() => {
+  videoStore.getRankedExerciseVideoList();
+  
+});
+
+
+
+
+
+// const videos = ref([
+//     {
+//         exerciseVideoId : 1,
+//         userId : 1,
+//         title : "그만하고싶어",
+//         url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
+//         youtubeId : "Kl9Dmx86Z0Q",
+//         description : "짱 힘듦",
+//         createdAt : "2025-01-01",
+//         updatedAt : "205-01-01",
+//         targetName : "팔뚝",
+//     },
+//     {
+//         exerciseVideoId : 1,
+//         userId : 1,
+//         title : "그만하고싶어",
+//         url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
+//         youtubeId : "Kl9Dmx86Z0Q",
+//         description : "짱 힘듦",
+//         createdAt : "2025-01-01",
+//         updatedAt : "205-01-01",
+//         targetName : "팔뚝",
+//     },
+//     {
+//         exerciseVideoId : 1,
+//         userId : 1,
+//         title : "그만하고싶어",
+//         url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
+//         youtubeId : "Kl9Dmx86Z0Q",
+//         description : "짱 힘듦",
+//         createdAt : "2025-01-01",
+//         updatedAt : "205-01-01",
+//         targetName : "팔뚝",
+//     },
+//     {
+//         exerciseVideoId : 1,
+//         userId : 1,
+//         title : "그만하고싶어",
+//         url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
+//         youtubeId : "Kl9Dmx86Z0Q",
+//         description : "짱 힘듦",
+//         createdAt : "2025-01-01",
+//         updatedAt : "205-01-01",
+//         targetName : "팔뚝",
+//     },
+//     {
+//         exerciseVideoId : 1,
+//         userId : 1,
+//         title : "그만하고싶어",
+//         url : "https://youtu.be/Kl9Dmx86Z0Q?si=_yqY4ZeT1L0Xuc2X",
+//         youtubeId : "Kl9Dmx86Z0Q",
+//         description : "짱 힘듦",
+//         createdAt : "2025-01-01",
+//         updatedAt : "205-01-01",
+//         targetName : "팔뚝",
+//     },
     
-])
+// ])
 
 </script>
 
