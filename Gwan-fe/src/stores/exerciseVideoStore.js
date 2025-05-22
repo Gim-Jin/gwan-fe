@@ -24,7 +24,16 @@ export const useExerciseVideoStore = defineStore('exerciseVideo', () => {
     })
     .then((response) => {
         exerciseVideoList.value = response.data.data;
-        
+    })
+  }
+
+  const getAllExerciseVideoList = function() {
+    axios({
+        url: REST_API_URL,
+        method: "GET"
+    })
+    .then((response) => {
+        exerciseVideoList.value = response.data.data;
     })
   }
 
@@ -38,5 +47,5 @@ export const useExerciseVideoStore = defineStore('exerciseVideo', () => {
     })
   }
 
-  return { getRankedExerciseVideoList, exerciseVideoList, exerciseVideo, getVideoDetailInfo }
+  return { getRankedExerciseVideoList, getAllExerciseVideoList, exerciseVideoList, exerciseVideo, getVideoDetailInfo }
 })

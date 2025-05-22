@@ -22,14 +22,11 @@ const router = createRouter({
       path: "/exercises",
       name: "exercises",
       component: ExerciseView,
-      children: [
-       
-      ],
     },
     {
-        path: "/exercises/:id",
-        name: "exerciseDetail",
-        component: ExerciseDetailView,
+      path: "/exercises/:id",
+      name: "exerciseDetail",
+      component: ExerciseDetailView,
     },
     {
       path: '/login',
