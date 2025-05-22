@@ -7,18 +7,38 @@
         <h2>로그인</h2>
       </div>
 
-      <form class="login-form">
+      <form class="login-form" @submit.prevent="handleLogin">
         <div class="form-group">
-          <label for="id">아이디</label>
-          <input type="id" id="id" placeholder="아이디를 입력하세요" />
+          <label for="loginUserId">아이디</label>
+          <input 
+            type="text" 
+            id="loginUserId" 
+            v-model="form.loginUserId"
+            placeholder="아이디를 입력하세요"
+            required 
+          />
         </div>
 
         <div class="form-group">
           <label for="password">비밀번호</label>
-          <input type="password" id="password" placeholder="비밀번호를 입력하세요" />
+          <input 
+            type="password" 
+            id="password" 
+            v-model="form.password"
+            placeholder="비밀번호를 입력하세요" 
+            required
+          />
         </div>
 
-        <button type="submit" class="login-btn">로그인</button>
+        <p v-if="errorMsg" class="error-message">{{ errorMsg }}</p>
+
+        <button 
+          type="submit" 
+          class="login-btn"
+          :disabled="loading"
+        >
+          {{ loading ? '로그인 중...' : '로그인' }}
+        </button>
       </form>
 
       <div class="login-footer">
@@ -36,7 +56,38 @@
 </template>
 
 <script setup>
+import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
+const router = useRouter()
+const authStore = useAuthStore()
+const loading = ref(false)
+const errorMsg = ref('')
+
+// 로그인 폼 데이터
+const form = reactive({
+  loginUserId: '',
+  password: ''
+})
+
+// 로그인 처리 함수
+const handleLogin = async () => {
+  errorMsg.value = ''
+  loading.value = true
+  
+  try {
+    await authStore.loginUser(form)
+    
+    // 로그인 성공 후 홈페이지로 이동
+    router.push({ name: 'home' })
+  } catch (err) {
+    console.error('로그인 오류:', err)
+    errorMsg.value = err.response?.data?.message || '로그인에 실패했습니다. 아이디와 비밀번호를 확인해 주세요.'
+  } finally {
+    loading.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -92,6 +143,12 @@
   font-size: 1rem;
 }
 
+.error-message {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
 .login-btn {
   width: 100%;
   padding: 0.75rem;
@@ -105,8 +162,13 @@
   transition: background-color 0.2s ease;
 }
 
-.login-btn:hover {
+.login-btn:hover:not([disabled]) {
   background-color: #2563eb;
+}
+
+.login-btn[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .login-footer {
