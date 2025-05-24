@@ -224,8 +224,8 @@ export default {
 }
 
 .btn-today {
-  background-color: #f0f4ff;
-  color: #365fff;
+  background-color: rgba(255, 138, 101, 0.1);
+  color: var(--primary-color);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -235,7 +235,7 @@ export default {
 }
 
 .btn-today:hover {
-  background-color: #e1e8ff;
+  background-color: rgba(255, 138, 101, 0.2);
 }
 
 .date-navigation {
@@ -253,7 +253,7 @@ export default {
 
 .nav-btn {
   background: none;
-  border: 1px solid #eee;
+  border: 1px solid #ddd;
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -265,8 +265,8 @@ export default {
 }
 
 .nav-btn:hover {
-  background-color: #f8f8f8;
-  border-color: #ddd;
+  background-color: rgba(255,138,101,0.1);
+  border-color: var(--primary-color);
 }
 
 .full-width-calendar {
@@ -284,11 +284,11 @@ export default {
 }
 
 :deep(.fc-day-today) {
-  background-color: #f8f9ff !important;
+  background-color: rgba(255,138,101,0.15) !important;
 }
 
 :deep(.fc-day-sat) {
-  color: #4267B2;
+  color: var(--primary-color);
 }
 
 :deep(.fc-day-sun) {
@@ -421,12 +421,12 @@ export default {
 }
 
 .btn-complete {
-  background-color: #365fff;
+  background-color: var(--primary-color);
   color: white;
 }
 
 .btn-complete:hover {
-  background-color: #2a4ad9;
+  background-color: var(--primary-hover-color);
 }
 
 .btn-reschedule {
@@ -447,8 +447,8 @@ export default {
 }
 
 :deep(.bodypart-badge) {
-  background-color: #e7f1ff;
-  color: #365fff;
+  background-color: rgba(255,138,101,0.15);
+  color: var(--primary-color);
   font-size: 0.8rem;
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
