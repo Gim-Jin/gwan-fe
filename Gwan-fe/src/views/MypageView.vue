@@ -53,7 +53,7 @@
   const user = ref(null)
   const error = ref(null)
   
-  onMounted(async () => {
+  const fetchUserData = async () => {
     try {
       const response = await fetchMypage()
       user.value = response.data.data
@@ -68,6 +68,11 @@
       }
       console.error(e)
     }
+  }
+  
+  onMounted(async () => {
+    // 라우터 가드에서 인증을 보장하므로 바로 데이터 fetch
+    await fetchUserData()
   })
   </script>
   
