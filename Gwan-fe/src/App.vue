@@ -15,8 +15,13 @@ import HeaderNav from './components/common/HeaderNav.vue'
 import Footer from './components/common/Footer.vue'
 import HeaderLoginedNav from './components/common/HeaderLoginedNav.vue';
 import { useAuthStore } from './stores/auth'
+import { onMounted } from 'vue'
 
 const authStore = useAuthStore()
+
+onMounted(() => {
+    authStore.initialize()
+})
 </script>
 
 <style>
