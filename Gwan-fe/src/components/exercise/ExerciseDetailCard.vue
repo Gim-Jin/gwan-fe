@@ -2,8 +2,8 @@
   <div class="exercise-detail container my-5">
     <h2 class="mb-4 d-flex justify-content-between align-items-center">
       영상 상세보기
-      <button class="btn-like" @click="toggleLike" :aria-pressed="isLiked.toString()">
-        <i :class="isLiked ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'" class="like-icon"></i>
+      <button class="btn-like" @click="toggleLike" :aria-pressed="likeStore.isLiked.toString()">
+        <i :class="likeStore.isLiked ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'" class="like-icon"></i>
       </button>
     </h2>
 
@@ -30,52 +30,24 @@
 
 <script setup>
 import { useExerciseVideoStore } from '@/stores/exerciseVideoStore';
+import { useLikeStore } from '@/stores/likeStore';
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const exerciseVideoStore = useExerciseVideoStore();
+const likeStore = useLikeStore();
 
-onMounted(() => {
+onMounted(async () => {
   const videoId = route.params.id;
-  exerciseVideoStore.getVideoDetailInfo(videoId);
+  await exerciseVideoStore.getVideoDetailInfo(videoId);
+  await likeStore.checkLike(videoId);
 });
 
-const STORAGE_KEY = 'liked_videos';
-const isLiked = ref(false);
-
-const loadLikedList = () => {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  } catch (e) {
-    return [];
-  }
+const toggleLike = async () => {
+  const videoId = route.params.id;
+  await likeStore.toggleLike(videoId);
 };
-
-const saveLikedList = (list) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-};
-
-const toggleLike = () => {
-  const list = loadLikedList();
-  const videoId = exerciseVideoStore.exerciseVideo.exerciseVideoId;
-  const idx = list.indexOf(videoId);
-  
-  if (idx === -1) {
-    list.push(videoId);
-    isLiked.value = true;
-  } else {
-    list.splice(idx, 1);
-    isLiked.value = false;
-  }
-  saveLikedList(list);
-};
-
-onMounted(() => {
-  const list = loadLikedList();
-  const videoId = exerciseVideoStore.exerciseVideo.exerciseVideoId;
-  isLiked.value = list.includes(videoId);
-});
 </script>
 
 <style scoped>
