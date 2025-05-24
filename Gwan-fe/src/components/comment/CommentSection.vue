@@ -11,7 +11,6 @@
     />
 
     <!-- 댓글 작성 -->
-    <h6 class="text-purple fw-bold mb-2">🟣 댓글창</h6>
     <div class="bg-light p-4 rounded-4">
       <label for="commentInput" class="form-label fw-semibold">댓글 작성</label>
       <textarea
@@ -29,10 +28,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { useCommentStore } from '@/stores/commentStore';
+import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import CommentItem from './CommentItem.vue';
+
+
+const route = useRoute();
+const comments = computed(() => commentStore.comments)
+
+const commentStore = useCommentStore();
 
 // 서버에서 받아올 댓글들
-const comments = ref([])
+onMounted(() => {
+  commentStore.getComments(route.params.id);
+})
 
 // 댓글 입력값
 const newComment = ref('')
