@@ -30,5 +30,32 @@ export const useCommentStore = defineStore('comment', () => {
     }
   } 
 
-  return { comments, getComments, saveComment }
+  const myComments = ref([]);
+  const getMyComments = async () => {
+    await axios.get(`http://localhost:8080/api/users/comments`, {withCredentials: true})
+      .then((response) => {
+        myComments.value = response.data.data;
+        console.log(myComments.value);
+      })
+  }
+
+  const removeComment = async (commentId) => {
+    await axios.delete(`http://localhost:8080/api/users/comments/${commentId}`, {withCredentials: true})
+      .then((response) => {
+        myComments.value = myComments.value.filter((comment) => comment.id !== commentId);
+      })
+  }
+
+  const modifyComment = async (commentId, content) => {
+    try {
+      await axios.put(`http://localhost:8080/api/users/comments/${commentId}`, {
+        content
+      }, { withCredentials: true });
+      await getMyComments(); // 수정 후 목록 새로고침
+    } catch (error) {
+      console.error('Error modifying comment:', error);
+    }
+  }
+
+  return { comments, getComments, saveComment, getMyComments, myComments, removeComment, modifyComment }
 })
