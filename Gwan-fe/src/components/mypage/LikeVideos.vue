@@ -16,7 +16,7 @@
         <h6>{{ video.title }}</h6>
         <small>{{ video.date }}</small>
       </div>
-      <button class="btn btn-danger btn-sm ms-auto">찜 취소</button>
+      <button class="btn btn-danger btn-sm ms-auto" @click="removeLike(video.exerciseVideoId)">찜 취소</button>
     </div>
   </div>
 </template>
@@ -38,6 +38,11 @@ import { useLikeStore } from '@/stores/likeStore';
 
 const likeStore = useLikeStore();
 const likedVideos = computed(() => likeStore.likedVideos);
+
+const removeLike = async (videoId) => {
+  await likeStore.toggleLike(videoId);
+  await likeStore.getLikedVideos();
+}
 
 onMounted(()=> {
   likeStore.getLikedVideos();
