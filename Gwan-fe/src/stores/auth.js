@@ -1,16 +1,32 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { login, logout } from '@/api/auth'
+import api from '@/api/axios'
 
 export const useAuthStore = defineStore('auth', () => {
   // 상태
-  const accessToken = ref(null)
+  const accessToken = ref(false)
   const user = ref(null)
   const loading = ref(false)
   const error = ref(null)
 
   // 게터
   const isAuthenticated = computed(() => !!accessToken.value)
+
+  // 사용자 정보 조회
+  const fetchUserInfo = async () => {
+    try {
+      const response = await api.get('/api/user/mypage')
+      user.value = response.data.data
+      accessToken.value = true
+      return true
+    } catch (err) {
+      console.error('사용자 정보 조회 실패:', err)
+      accessToken.value = false
+      user.value = null
+      return false
+    }
+  }
 
   // 액션
   const loginUser = async (credentials) => {
@@ -19,8 +35,8 @@ export const useAuthStore = defineStore('auth', () => {
     
     try {
       const response = await login(credentials)
-      // 쿠키는 자동으로 저장되므로 별도 처리 불필요
-      accessToken.value = true // 로그인 상태만 표시
+      // 로그인 성공 후 사용자 정보 조회
+      await fetchUserInfo()
       return response
     } catch (err) {
       error.value = err.response?.data?.message || '로그인에 실패했습니다'
@@ -33,18 +49,22 @@ export const useAuthStore = defineStore('auth', () => {
   const logoutUser = async () => {
     try {
       await logout()
-      accessToken.value = null
+      accessToken.value = false
       user.value = null
     } catch (err) {
       console.error('로그아웃 오류:', err)
     }
   }
 
-  // 초기화 함수 - 쿠키 존재 여부로 인증 상태 확인
-  const initialize = () => {
-    const cookies = document.cookie.split(';')
-    const hasAccessToken = cookies.some(cookie => cookie.trim().startsWith('accessToken='))
-    accessToken.value = hasAccessToken
+  // 초기화 함수 - 사용자 정보 조회를 통한 인증 상태 확인
+  const initialize = async () => {
+    try {
+      await fetchUserInfo()
+    } catch (err) {
+      console.error('초기화 중 오류:', err)
+      accessToken.value = false
+      user.value = null
+    }
   }
 
   return {
