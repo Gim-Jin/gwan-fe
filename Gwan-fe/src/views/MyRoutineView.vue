@@ -284,7 +284,7 @@ const weeklyRoutine = ref([
 
 <style scoped>
 .my-routine {
-  background-color: #f8f9fa;
+  background-color: var(--secondary-color);
   min-height: 100vh;
   padding: 2rem 0;
 }
@@ -304,12 +304,12 @@ const weeklyRoutine = ref([
 .routine-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #333;
+  color: var(--text-color);
   margin: 0;
 }
 
 .btn-add {
-  background-color: #365FFF;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   padding: 0.7rem 1.2rem;
@@ -323,7 +323,7 @@ const weeklyRoutine = ref([
 }
 
 .btn-add:hover {
-  background-color: #2f4edb;
+  background-color: var(--primary-hover-color);
 }
 
 .routine-empty {
@@ -354,7 +354,7 @@ const weeklyRoutine = ref([
 
 .btn-add-routine {
   padding: 0.8rem 1.5rem;
-  background-color: #365FFF;
+  background-color: var(--primary-color);
   color: white;
   border: none;
   border-radius: 8px;
@@ -365,7 +365,7 @@ const weeklyRoutine = ref([
 }
 
 .btn-add-routine:hover {
-  background-color: #2e4ddb;
+  background-color: var(--primary-hover-color);
   transform: translateY(-2px);
 }
 

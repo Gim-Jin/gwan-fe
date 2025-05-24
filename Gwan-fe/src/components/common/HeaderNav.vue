@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header-left">
-      <h1 class="logo">SSAFIT</h1>
+      <h1 class="logo">MOVE<br/>WELL</h1>
       <nav class="nav-menu">
         <RouterLink :to="{name : 'home'}"><i class="bi bi-house text-primary icon-large"></i> 홈</RouterLink>
         <RouterLink :to="{name : 'exercises'}"><i class="bi bi-lightning-charge text-danger icon-large"></i> 운동</RouterLink>
@@ -31,8 +31,8 @@ function search() {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ddd;
+  background-color: var(--secondary-color);
+  border-bottom: 1px solid var(--primary-color);
   position: fixed;
   top: 0;
   left: 0;
@@ -63,7 +63,8 @@ function search() {
   font-size: 1.5rem;
   font-weight: bold;
   margin-right: 1rem;
-  color: #1c1c1c;
+  color: var(--primary-color);
+  line-height: 1.1;
 }
 
 .nav-menu {

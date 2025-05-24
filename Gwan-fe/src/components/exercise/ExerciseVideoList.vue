@@ -1,30 +1,31 @@
 <template>
-  <section>
-  <h1 class="section-title" style="margin-left:10rem; margin-top:5rem;">전체 영상</h1>
-  
-  <div class="container px-1 my-5">
-    <ExerciseSearchBar />
-    <div class="d-flex justify-content-center">
-      <div class="row row-cols-1 row-cols-md-3 gx-5 gy-5" style="max-width: 900px; width: 100%;">
+  <section class="video-section py-5">
+    <div class="container">
+      <h1 class="section-title fw-bold mb-4">전체 영상</h1>
+
+      <!-- 검색 & 필터 -->
+      <ExerciseSearchBar />
+
+      <!-- 영상 카드 그리드 -->
+      <div class="row row-cols-2 row-cols-md-5 gx-4 gy-5">
         <div class="col" v-for="video in paginatedVideos" :key="video.exerciseVideoId">
           <ExerciseThumbnailCard :video="video" />
         </div>
       </div>
+
+      <!-- 페이지네이션 -->
+      <div class="d-flex justify-content-center my-4" v-if="totalPages > 1">
+        <button class="btn btn-outline-primary mx-1" :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">이전</button>
+        <button
+          v-for="page in totalPages"
+          :key="page"
+          class="btn"
+          :class="page === currentPage ? 'btn-primary' : 'btn-outline-primary'"
+          @click="goToPage(page)"
+        >{{ page }}</button>
+        <button class="btn btn-outline-primary mx-1" :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">다음</button>
+      </div>
     </div>
-    <!-- 페이지네이션 -->
-    <div class="d-flex justify-content-center my-4" v-if="totalPages > 1">
-      <button class="btn btn-outline-primary mx-1" :disabled="currentPage === 1" @click="goToPage(currentPage - 1)">이전</button>
-      <button
-        v-for="page in totalPages"
-        :key="page"
-        class="btn"
-        :class="page === currentPage ? 'btn-primary' : 'btn-outline-primary'"
-        @click="goToPage(page)"
-      >{{ page }}</button>
-      <button class="btn btn-outline-primary mx-1" :disabled="currentPage === totalPages" @click="goToPage(currentPage + 1)">다음</button>
-    </div>
-    <div style="height: 80px;"></div>
-  </div>
   </section>
 </template>
 
