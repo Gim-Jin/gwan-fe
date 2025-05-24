@@ -50,8 +50,8 @@ const newComment = ref('')
 // 댓글 등록 함수
 function submitComment() {
   // TODO: axios 요청으로 등록 처리 예정
-  // axios.post(...) → 성공 시 목록 새로 불러오기
-  console.log('댓글 내용:', newComment.value)
+
+  commentStore.saveComment(route.params.id, newComment.value);
   newComment.value = ''
 }
 </script>

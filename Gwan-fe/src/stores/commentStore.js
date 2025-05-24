@@ -18,5 +18,17 @@ export const useCommentStore = defineStore('comment', () => {
       })
   }
 
-  return { comments, getComments }
+  const saveComment = async (videoId, content) => {
+    try {
+    
+        const response = await axios.post(`${REST_API_URL}/${videoId}/comments`, {
+            content,
+        }, {withCredentials: true});
+        await getComments(videoId);
+    } catch(error) {
+        console.log("저장 실패:" , error);
+    }
+  } 
+
+  return { comments, getComments, saveComment }
 })
