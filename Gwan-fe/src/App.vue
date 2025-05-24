@@ -1,6 +1,9 @@
 <template>
     <div class="app-container">
-        <HeaderNav/>
+        <!-- islogined라는 boolean 변수를 통해 로그인 여부를 확인 -->
+        <HeaderNav v-if="!authStore.isAuthenticated"/>
+        <HeaderLoginedNav v-else/>
+
         <main class="main-content"><router-view/></main>
         <Footer/>
     </div>
@@ -10,7 +13,10 @@
 <script setup>
 import HeaderNav from './components/common/HeaderNav.vue'
 import Footer from './components/common/Footer.vue'
+import HeaderLoginedNav from './components/common/HeaderLoginedNav.vue';
+import { useAuthStore } from './stores/auth'
 
+const authStore = useAuthStore()
 </script>
 
 <style>
