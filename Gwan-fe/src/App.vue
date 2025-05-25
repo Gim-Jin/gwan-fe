@@ -19,8 +19,8 @@ import { onMounted } from 'vue'
 
 const authStore = useAuthStore()
 
-onMounted(() => {
-    authStore.initialize()
+onMounted(async () => {
+    await authStore.initialize()
 })
 </script>
 

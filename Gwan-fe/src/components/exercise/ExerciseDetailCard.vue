@@ -31,6 +31,8 @@
 <script setup>
 import { useExerciseVideoStore } from '@/stores/exerciseVideoStore';
 import { useLikeStore } from '@/stores/likeStore';
+
+import { useAuthStore } from '@/stores/auth';
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router';
 
@@ -38,15 +40,40 @@ const route = useRoute();
 const exerciseVideoStore = useExerciseVideoStore();
 const likeStore = useLikeStore();
 
+const authStore = useAuthStore();
+
 onMounted(async () => {
+  // 사용자 정보 초기화
+  if (!authStore.user) {
+    await authStore.initialize();
+  }
+  
   const videoId = route.params.id;
   await exerciseVideoStore.getVideoDetailInfo(videoId);
-  await likeStore.checkLike(videoId);
+  
+  // 로그인된 사용자만 좋아요 상태 확인
+  if (authStore.isAuthenticated) {
+    await likeStore.checkLike(videoId);
+  }
 });
 
 const toggleLike = async () => {
-  const videoId = route.params.id;
-  await likeStore.toggleLike(videoId);
+  // 로그인 체크
+  if (!authStore.isAuthenticated) {
+    alert('로그인 후 좋아요를 누를 수 있습니다.');
+    return;
+  }
+
+  try {
+    const videoId = route.params.id;
+    await likeStore.toggleLike(videoId);
+  } catch (error) {
+    if (error.message === '로그인이 필요합니다.') {
+      alert('로그인 후 좋아요를 누를 수 있습니다.');
+    } else {
+      console.error('좋아요 처리 중 오류가 발생했습니다:', error);
+    }
+  }
 };
 </script>
 

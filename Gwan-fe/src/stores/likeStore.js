@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios';
+import { useAuthStore } from './auth';
 
 const REST_API_URL = 'http://localhost:8080/api/likes'
 
@@ -18,6 +19,13 @@ export const useLikeStore = defineStore('like', () => {
   };
 
   const toggleLike = async (videoId) => {
+    const authStore = useAuthStore();
+    
+    // 로그인 체크
+    if (!authStore.isAuthenticated) {
+      throw new Error('로그인이 필요합니다.');
+    }
+
     try {
       if (isLiked.value) {
         await axios.delete(`${REST_API_URL}/${videoId}`, { withCredentials: true });
@@ -27,6 +35,8 @@ export const useLikeStore = defineStore('like', () => {
       isLiked.value = !isLiked.value;
     } catch (error) {
       console.error('Error toggling like:', error);
+
+      throw error;
     }
   };
 

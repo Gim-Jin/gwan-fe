@@ -11,7 +11,7 @@
     />
 
     <!-- 댓글 작성 -->
-    <div class="bg-light p-4 rounded-4">
+    <div v-if="authStore.isAuthenticated" class="bg-light p-4 rounded-4">
       <label for="commentInput" class="form-label fw-semibold">댓글 작성</label>
       <textarea
         v-model="newComment"
@@ -23,6 +23,14 @@
       <div class="text-end">
         <button class="btn btn-primary btn-sm" @click="submitComment">댓글 작성</button>
       </div>
+    </div>
+    
+    <!-- 로그인하지 않은 사용자에게 표시할 메시지 -->
+    <div v-else class="bg-light p-4 rounded-4 text-center">
+      <p class="mb-2 text-muted">댓글을 작성하려면 로그인이 필요합니다.</p>
+      <RouterLink :to="{ name: 'login' }" class="btn btn-outline-primary btn-sm">
+        로그인하기
+      </RouterLink>
     </div>
   </div>
 </template>
@@ -58,9 +66,19 @@ const newComment = ref('')
 
 // 댓글 등록 함수
 function submitComment() {
-  // TODO: axios 요청으로 등록 처리 예정
+  // 로그인 체크
+  if (!authStore.isAuthenticated) {
+    alert('로그인 후 댓글을 작성할 수 있습니다.')
+    return
+  }
 
-  commentStore.saveComment(route.params.id, newComment.value);
+  // 빈 내용 체크
+  if (!newComment.value.trim()) {
+    alert('댓글 내용을 입력해주세요.')
+    return
+  }
+
+  commentStore.saveComment(route.params.id, newComment.value.trim());
   newComment.value = ''
 }
 </script>
