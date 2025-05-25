@@ -8,4 +8,16 @@ export const getRehabPrograms = (surveyData) => {
 // 설문 결과 저장 (필요시)
 export const saveSurveyResult = (surveyData) => {
   return api.post('/api/users/survey', surveyData)
+}
+
+// 유저의 모든 운동 루틴(처방) 가져오기
+export const getAllPrescriptions = (isMyRoutinePage = false) => {
+  return api.get('/api/users/rehab-programs', {
+    params: { isMyRoutinePage }
+  })
+}
+
+// 운동 루틴 완료 처리
+export const doneRehabProgram = (rehabProgramId) => {
+  return api.put(`/api/users/rehab-programs/${rehabProgramId}`)
 } 

@@ -24,7 +24,7 @@
     </div>
 
     <div class="detail-actions" v-if="hasExercises">
-      <button class="btn-primary" @click="$emit('complete')">
+      <button class="btn-primary" @click="$emit('complete', routine.rehabProgramId)">
         <i class="bi bi-check-circle-fill"></i> 완료하기
       </button>
       <button class="btn-outline" @click="$emit('reschedule')">
