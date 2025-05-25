@@ -119,63 +119,32 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // 초기화 함수 - 사용자 정보 조회를 통한 인증 상태 확인
-  const initialize = async () => {
-    // 로그인/회원가입 페이지에서는 인증 확인을 건너뜀
-    const currentPath = window.location.pathname
-    
-    if (currentPath === '/login' || currentPath === '/signup') {
-      accessToken.value = false
-      user.value = null
-      return
-    }
-    
-    // 1단계: 먼저 사용자 정보 조회 시도
-    try {
-      const response = await api.get('/api/user/mypage')
-      
-      // API가 역할만 직접 반환하는 경우
-      if (response.data && response.data.success) {
-        // data 필드에 역할이 직접 들어있는 경우 (예: "ADMIN", "ADVISOR", "GENERAL")
-        const role = response.data.data || 'GENERAL'
-        user.value = {
-          role: role.toUpperCase()
-        }
-        
-        accessToken.value = true
-        return
-      }
-    } catch (error) {
-      // 2단계: 401 에러인 경우 토큰 재발급 시도
-      if (error.response && error.response.status === 401) {
-        const reissueSuccess = await reissueToken()
-        
-        if (reissueSuccess) {
-          // 3단계: 토큰 재발급 성공 시 다시 사용자 정보 조회
-          try {
-            const response = await api.get('/api/user/mypage')
-            
-            // API가 역할만 직접 반환하는 경우
-            if (response.data && response.data.success) {
-              // data 필드에 역할이 직접 들어있는 경우 (예: "ADMIN", "ADVISOR", "GENERAL")
-              const role = response.data.data || 'GENERAL'
-              user.value = {
-                role: role.toUpperCase()
-              }
-              
-              accessToken.value = true
-              return
-            }
-          } catch (retryError) {
-            // 재시도 실패
-          }
-        }
-      }
-    }
-    
-    // 모든 시도 실패 시 로그아웃 상태로 설정
+ const initialize = async () => {
+  const currentPath = window.location.pathname
+
+  if (currentPath === '/login' || currentPath === '/signup') {
     accessToken.value = false
     user.value = null
+    localStorage.removeItem('userRole')
+    return
   }
+
+  try {
+    // 토큰 유효성 검사 및 role 확인
+    const response = await api.get('/api/auth/me')
+    if (response.data && response.data.success) {
+      const role = response.data.data || 'GENERAL'
+      user.value = { role: role.toUpperCase() }
+      accessToken.value = true
+      localStorage.setItem('userRole', role.toUpperCase())
+      return
+    }
+  } catch (error) {
+    accessToken.value = false
+    user.value = null
+    localStorage.removeItem('userRole')
+  }
+}
 
   return {
     accessToken,
