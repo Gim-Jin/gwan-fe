@@ -29,19 +29,28 @@
 
 <script setup>
 import { useCommentStore } from '@/stores/commentStore';
+import { useAuthStore } from '@/stores/auth';
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import CommentItem from './CommentItem.vue';
 
-
 const route = useRoute();
+const commentStore = useCommentStore();
+const authStore = useAuthStore();
+
 const comments = computed(() => commentStore.comments)
 
-const commentStore = useCommentStore();
-
 // 서버에서 받아올 댓글들
-onMounted(() => {
+onMounted(async () => {
+  // 사용자 정보 초기화
+  if (!authStore.user) {
+    await authStore.initialize();
+  }
+  
   commentStore.getComments(route.params.id);
+  
+  // 디버깅용
+  console.log('CommentSection mounted - authStore.user:', authStore.user);
 })
 
 // 댓글 입력값
