@@ -9,7 +9,7 @@ import Mypage from '@/views/MypageView.vue'
 import ReviseMyInfoView from '@/views/ReviseMyInfoView.vue'
 import MypageView from '@/views/MypageView.vue'
 import SurveyComplete from '@/components/survey/SurveyComplete.vue'
-import AdminUserManagementView from '@/views/AdminUserManagementView.vue'
+import AdminManagement from '@/views/AdminManagement.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
@@ -65,8 +65,8 @@ const router = createRouter({
     },
     {
       path: '/admin/users',
-      name: 'adminUserManagement',
-      component: AdminUserManagementView,
+      name: 'adminManagement',
+      component: AdminManagement,
       meta: { requiresAuth: true, requiresAdmin: true }
     }
   ],
