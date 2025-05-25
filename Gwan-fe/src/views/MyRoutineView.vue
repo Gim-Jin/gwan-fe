@@ -55,10 +55,12 @@ import SurveyStep2 from '@/components/survey/SurveyStep2.vue'
 import SurveyStep3 from '@/components/survey/SurveyStep3.vue'
 import SurveyStep4 from '@/components/survey/SurveyStep4.vue'
 import ExerciseCalendar from '@/components/calendar/ExerciseCalendar.vue'
+import { useSurveyStore } from '@/stores/userSurveyStore'
 
 const showSurvey = ref(false)
 const surveyStep = ref(1)
 const selectedExercise = ref(null)
+const surveyStore = useSurveyStore()
 
 const goNextStep = () => {
   if (surveyStep.value < 4) surveyStep.value++
@@ -68,16 +70,65 @@ const goPrevStep = () => {
 }
 const closeSurvey = () => {
   showSurvey.value = false
+  surveyStep.value = 1
 }
 const handleExerciseSelected = (exercise) => {
   selectedExercise.value = exercise
 }
 
-const finishSurvey = () => {
-  // 설문 완료 후 루틴 추가 로직
-  showSurvey.value = false
-  // API 호출 등의 로직 추가
+const finishSurvey = async () => {
+  try {
+    console.log('설문 완료, 운동 프로그램 요청 중...')
+    
+    // 설문 데이터로 개인화된 운동 프로그램 받기 (이미 파싱된 weeklyRoutine 형태)
+    const newWeeklyRoutine = await surveyStore.fetchRehabPrograms()
+    
+    // 받은 데이터를 바로 사용 (이미 올바른 형식으로 파싱됨)
+    weeklyRoutine.value = newWeeklyRoutine
+    
+    console.log('새로운 루틴 생성 완료:', weeklyRoutine.value)
+    
+    // 설문 완료 페이지로 이동
+    showSurvey.value = false
+    surveyStep.value = 1
+    
+    // 성공 메시지
+    alert('개인 맞춤 운동 프로그램이 생성되었습니다!')
+    
+  } catch (error) {
+    console.error('운동 프로그램 생성 실패:', error)
+    alert('운동 프로그램 생성에 실패했습니다. 다시 시도해주세요.')
+  }
 }
+
+// API에서 받은 프로그램을 주간 루틴 형식으로 변환 (더 이상 필요 없음 - 주석 처리)
+/*
+const generateWeeklyRoutineFromPrograms = (programs) => {
+  const today = new Date()
+  const weekDays = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
+  
+  return weekDays.map((day, index) => {
+    const date = new Date(today)
+    date.setDate(today.getDate() + index)
+    
+    // 격일로 운동 (월, 수, 금, 일)
+    const shouldExercise = index % 2 === 0 || index === 6
+    
+    return {
+      day,
+      date: date.toISOString().split('T')[0],
+      exercises: shouldExercise ? programs.map(program => ({
+        category: program.category || '개인 맞춤 운동',
+        name: program.name,
+        duration: program.duration || '10분',
+        equipment: program.equipment || '없음',
+        note: program.description || ''
+      })) : [],
+      note: shouldExercise ? '' : '휴식일'
+    }
+  })
+}
+*/
 
 // 운동 루틴 데이터
 const weeklyRoutine = ref([
