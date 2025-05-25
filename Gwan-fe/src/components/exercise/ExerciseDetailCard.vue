@@ -2,8 +2,8 @@
   <div class="exercise-detail container my-5">
     <h2 class="mb-4 d-flex justify-content-between align-items-center">
       영상 상세보기
-      <button class="btn-like" @click="toggleLike" :aria-pressed="isLiked.toString()">
-        <i :class="isLiked ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'" class="like-icon"></i>
+      <button class="btn-like" @click="toggleLike" :aria-pressed="likeStore.isLiked.toString()">
+        <i :class="likeStore.isLiked ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'" class="like-icon"></i>
       </button>
     </h2>
 
@@ -30,52 +30,49 @@
 
 <script setup>
 import { useExerciseVideoStore } from '@/stores/exerciseVideoStore';
+import { useLikeStore } from '@/stores/likeStore';
+import { useAuthStore } from '@/stores/auth';
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const exerciseVideoStore = useExerciseVideoStore();
+const likeStore = useLikeStore();
+const authStore = useAuthStore();
 
-onMounted(() => {
-  const videoId = route.params.id;
-  exerciseVideoStore.getVideoDetailInfo(videoId);
-});
-
-const STORAGE_KEY = 'liked_videos';
-const isLiked = ref(false);
-
-const loadLikedList = () => {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  } catch (e) {
-    return [];
+onMounted(async () => {
+  // 사용자 정보 초기화
+  if (!authStore.user) {
+    await authStore.initialize();
   }
-};
-
-const saveLikedList = (list) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-};
-
-const toggleLike = () => {
-  const list = loadLikedList();
-  const videoId = exerciseVideoStore.exerciseVideo.exerciseVideoId;
-  const idx = list.indexOf(videoId);
   
-  if (idx === -1) {
-    list.push(videoId);
-    isLiked.value = true;
-  } else {
-    list.splice(idx, 1);
-    isLiked.value = false;
+  const videoId = route.params.id;
+  await exerciseVideoStore.getVideoDetailInfo(videoId);
+  
+  // 로그인된 사용자만 좋아요 상태 확인
+  if (authStore.isAuthenticated) {
+    await likeStore.checkLike(videoId);
   }
-  saveLikedList(list);
-};
-
-onMounted(() => {
-  const list = loadLikedList();
-  const videoId = exerciseVideoStore.exerciseVideo.exerciseVideoId;
-  isLiked.value = list.includes(videoId);
 });
+
+const toggleLike = async () => {
+  // 로그인 체크
+  if (!authStore.isAuthenticated) {
+    alert('로그인 후 좋아요를 누를 수 있습니다.');
+    return;
+  }
+
+  try {
+    const videoId = route.params.id;
+    await likeStore.toggleLike(videoId);
+  } catch (error) {
+    if (error.message === '로그인이 필요합니다.') {
+      alert('로그인 후 좋아요를 누를 수 있습니다.');
+    } else {
+      console.error('좋아요 처리 중 오류가 발생했습니다:', error);
+    }
+  }
+};
 </script>
 
 <style scoped>
