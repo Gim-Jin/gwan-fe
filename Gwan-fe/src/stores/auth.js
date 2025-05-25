@@ -137,6 +137,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = { role: role.toUpperCase() }
       accessToken.value = true
       localStorage.setItem('userRole', role.toUpperCase())
+      console.log('사용자 정보 초기화 성공:', user.value)
       return
     }
   } catch (error) {
