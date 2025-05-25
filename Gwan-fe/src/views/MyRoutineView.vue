@@ -3,9 +3,11 @@
     <div class="container-fluid">
       <div class="routine-header">
         <h1 class="routine-title">나의 루틴</h1>
-        <button class="btn-add" @click="showSurvey = true">
-          <i class="bi bi-plus-circle"></i> 운동 추가
-        </button>
+      </div>
+
+      <!-- 에러 메시지 -->
+      <div v-if="errorMsg" class="alert alert-danger text-center mb-3">
+        {{ errorMsg }}
       </div>
 
       <!-- 루틴 추가 버튼 -->
@@ -61,6 +63,8 @@ const showSurvey = ref(false)
 const surveyStep = ref(1)
 const selectedExercise = ref(null)
 const surveyStore = useSurveyStore()
+const weeklyRoutine = ref([])
+const errorMsg = ref('')
 
 const goNextStep = () => {
   if (surveyStep.value < 4) surveyStep.value++
@@ -101,6 +105,15 @@ const finishSurvey = async () => {
   }
 }
 
+onMounted(async () => {
+  try {
+    const routines = await surveyStore.fetchAllPrescriptions()
+    weeklyRoutine.value = routines
+  } catch (err) {
+    errorMsg.value = err?.message || '운동 루틴을 불러오지 못했습니다.'
+  }
+})
+
 // API에서 받은 프로그램을 주간 루틴 형식으로 변환 (더 이상 필요 없음 - 주석 처리)
 /*
 const generateWeeklyRoutineFromPrograms = (programs) => {
@@ -129,208 +142,6 @@ const generateWeeklyRoutineFromPrograms = (programs) => {
   })
 }
 */
-
-// 운동 루틴 데이터
-const weeklyRoutine = ref([
-  {
-    "day": "월요일",
-    "date": "2025-05-26",
-    "exercises": [
-      {
-        "category": "준비 운동 / 근막이완",
-        "name": "폼롤러 상완 삼두 마사지",
-        "duration": "2분",
-        "equipment": "폼롤러",
-        "note": "팔꿈치 위 삼두근을 집중적으로 부드럽게 굴려주세요."
-      },
-      {
-        "category": "신경 활주 운동",
-        "name": "정중신경 활주",
-        "duration": "3분",
-        "equipment": "없음",
-        "note": "팔을 옆으로 뻗고 손바닥을 하늘로 향하게 한 채 손목을 위아래로 움직입니다."
-      },
-      {
-        "category": "팔꿈치 및 손목 근육 강화",
-        "name": "손가락 저항 운동",
-        "duration": "3분",
-        "equipment": "고무 밴드",
-        "note": "손가락을 벌리고 모으는 동작을 반복합니다."
-      },
-      {
-        "category": "어깨 및 회전근 안정화",
-        "name": "밴드 외회전 운동",
-        "duration": "4분",
-        "equipment": "테라밴드",
-        "note": "팔꿈치를 90도 굽히고 몸통 옆에 붙인 채, 밴드를 바깥쪽으로 당깁니다."
-      },
-      {
-        "category": "등척성 유지 운동",
-        "name": "팔꿈치 굴곡 등척성 유지",
-        "duration": "3분",
-        "equipment": "없음",
-        "note": "90도 굽힌 팔을 반대 손으로 저항하면서 10초간 힘을 유지하고 반복합니다."
-      },
-      {
-        "category": "마무리 스트레칭",
-        "name": "손목 신전근 스트레칭",
-        "duration": "3분",
-        "equipment": "없음",
-        "note": "손바닥을 아래로 향한 채 손등을 눌러 스트레칭합니다."
-      }
-    ]
-  },
-  {
-    "day": "화요일",
-    "date": "2025-05-27",
-    "exercises": [
-      {
-        "category": "준비 운동 / 근막이완",
-        "name": "마사지볼 손바닥/팔꿈치 근막 이완",
-        "duration": "2분",
-        "equipment": "마사지볼",
-        "note": "탁자 위에서 팔을 마사지볼로 천천히 굴립니다."
-      },
-      {
-        "category": "신경 활주 운동",
-        "name": "척골신경 활주",
-        "duration": "3분",
-        "equipment": "없음",
-        "note": "팔을 앞으로 뻗고 손목을 바깥쪽으로 틀며 신경을 부드럽게 늘립니다."
-      },
-      {
-        "category": "팔꿈치 및 손목 근육 강화",
-        "name": "손목 회전 저항 운동",
-        "duration": "3분",
-        "equipment": "테라밴드",
-        "note": "밴드를 이용해 손목을 시계방향, 반시계 방향으로 저항을 줍니다."
-      },
-      {
-        "category": "어깨 및 회전근 안정화",
-        "name": "Y-T-W 밴드운동",
-        "duration": "4분",
-        "equipment": "테라밴드",
-        "note": "가슴을 편 상태에서 Y, T, W자 모양으로 팔을 벌리며 어깨 후면 자극."
-      },
-      {
-        "category": "등척성 유지 운동",
-        "name": "손목 굴곡 등척성 유지",
-        "duration": "2분",
-        "equipment": "없음",
-        "note": "손바닥을 위로 한 상태로 저항을 주며 유지."
-      },
-      {
-        "category": "마무리 스트레칭",
-        "name": "손목 회전 스트레칭",
-        "duration": "3분",
-        "equipment": "없음",
-        "note": "손목을 천천히 좌우로 돌리며 이완."
-      }
-    ]
-  },
-  {
-    "day": "수요일",
-    "date": "2025-05-28",
-    "exercises": [],
-    "note": "휴식 또는 가벼운 스트레칭만 진행"
-  },
-  {
-    "day": "목요일",
-    "date": "2025-05-29",
-    "exercises": [
-      {
-        "category": "준비 운동 / 근막이완",
-        "name": "폼롤러 상완 삼두 마사지",
-        "duration": "2분",
-        "equipment": "폼롤러",
-        "note": "팔꿈치 위 삼두근을 집중적으로 부드럽게 굴려주세요."
-      },
-      {
-        "category": "신경 활주 운동",
-        "name": "정중신경 활주",
-        "duration": "3분",
-        "equipment": "없음",
-        "note": "팔을 옆으로 뻗고 손바닥을 하늘로 향하게 한 채 손목을 위아래로 움직입니다."
-      },
-      {
-        "category": "팔꿈치 및 손목 근육 강화",
-        "name": "손가락 저항 운동",
-        "duration": "3분",
-        "equipment": "고무 밴드",
-        "note": "손가락을 벌리고 모으는 동작을 반복합니다."
-      },
-      {
-        "category": "어깨 및 회전근 안정화",
-        "name": "밴드 외회전 운동",
-        "duration": "4분",
-        "equipment": "테라밴드",
-        "note": "팔꿈치를 90도 굽히고 몸통 옆에 붙인 채, 밴드를 바깥쪽으로 당깁니다."
-      },
-      {
-        "category": "등척성 유지 운동",
-        "name": "팔꿈치 굴곡 등척성 유지",
-        "duration": "3분",
-        "equipment": "없음",
-        "note": "90도 굽힌 팔을 반대 손으로 저항하면서 10초간 힘을 유지하고 반복합니다."
-      },
-      {
-        "category": "마무리 스트레칭",
-        "name": "손목 신전근 스트레칭",
-        "duration": "3분",
-        "equipment": "없음",
-        "note": "손바닥을 아래로 향한 채 손등을 눌러 스트레칭합니다."
-      }
-    ]
-  },
-  {
-    "day": "금요일",
-    "date": "2025-05-30",
-    "exercises": [
-      {
-        "category": "준비 운동 / 근막이완",
-        "name": "마사지볼 손바닥/팔꿈치 근막 이완",
-        "duration": "2분",
-        "equipment": "마사지볼",
-        "note": "탁자 위에서 팔을 마사지볼로 천천히 굴립니다."
-      },
-      {
-        "category": "신경 활주 운동",
-        "name": "척골신경 활주",
-        "duration": "3분",
-        "equipment": "없음",
-        "note": "팔을 앞으로 뻗고 손목을 바깥쪽으로 틀며 신경을 부드럽게 늘립니다."
-      },
-      {
-        "category": "팔꿈치 및 손목 근육 강화",
-        "name": "손목 회전 저항 운동",
-        "duration": "3분",
-        "equipment": "테라밴드",
-        "note": "밴드를 이용해 손목을 시계방향, 반시계 방향으로 저항을 줍니다."
-      },
-      {
-        "category": "어깨 및 회전근 안정화",
-        "name": "Y-T-W 밴드운동",
-        "duration": "4분",
-        "equipment": "테라밴드",
-        "note": "가슴을 편 상태에서 Y, T, W자 모양으로 팔을 벌리며 어깨 후면 자극."
-      },
-      {
-        "category": "등척성 유지 운동",
-        "name": "손목 굴곡 등척성 유지",
-        "duration": "2분",
-        "equipment": "없음",
-        "note": "손바닥을 위로 한 상태로 저항을 주며 유지."
-      },
-      {
-        "category": "마무리 스트레칭",
-        "name": "손목 회전 스트레칭",
-        "duration": "3분",
-        "equipment": "없음",
-        "note": "손목을 천천히 좌우로 돌리며 이완."
-      }
-    ]
-  }
-])
 </script>
 
 <style scoped>

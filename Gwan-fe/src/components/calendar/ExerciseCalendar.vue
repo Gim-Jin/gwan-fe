@@ -39,6 +39,7 @@ import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import koLocale from '@fullcalendar/core/locales/ko'
 import DayRoutineDetail from './DayRoutineDetail.vue'
+import { doneRehabProgram } from '@/api/survey'
 
 export default {
   name: 'ExerciseCalendar',
@@ -99,32 +100,16 @@ export default {
       this.selectedEvent = null;
     },
     renderEventContent(eventInfo) {
-      const hasExercises = eventInfo.event.extendedProps.exercises &&
-        eventInfo.event.extendedProps.exercises.length > 0;
-
-      // Helper: 특정 키워드를 제거하여 부위를 추출
-      const extractBodyPart = (category = '') => {
-        // 불필요 단어 제거
-        const cleaned = category
-          .replace(/준비|운동|근막이완|근육|강화|안정화|스트레칭|유지|마무리|신경|활주|등척성|\//g, '')
-          .trim();
-        // '및' 이후도 포함
-        return cleaned;
-      };
-
-      if (hasExercises) {
-        const exercises = eventInfo.event.extendedProps.exercises;
-
-        // 부위 추출 후 중복 제거
-        const allParts = Array.from(new Set(exercises.map(ex => extractBodyPart(ex.category)))).filter(p => p);
-        const bodyParts = allParts.slice(0, 2);
-        const moreCount = allParts.length > 2 ? allParts.length - 2 : 0;
-
+      const exercises = eventInfo.event.extendedProps.exercises || [];
+      if (exercises.length > 0) {
+        const names = exercises.map(ex => ex.name).filter(Boolean);
+        const shown = names.slice(0, 2);
+        const more = names.length > 2 ? `<span class="exercise-more">외 ${names.length - 2}개</span>` : '';
         return {
           html: `
-            <div class="bodypart-event">
-              ${bodyParts.map(p => `<span class="bodypart-badge">${p}</span>`).join('')}
-              ${moreCount > 0 ? `<span class="bodypart-more">외 ${moreCount}개</span>` : ''}
+            <div class="exercise-event">
+              ${shown.map(n => `<span class="exercise-badge">${n}</span>`).join('')}
+              ${more}
             </div>
           `
         };
@@ -178,9 +163,19 @@ export default {
       const date = new Date(dateStr);
       return `${date.getMonth() + 1}월 ${date.getDate()}일`;
     },
-    completeExercise() {
-      // 운동 완료 처리 로직
-      alert('운동이 완료되었습니다!');
+    completeExercise(rehabProgramId) {
+      if (!rehabProgramId) {
+        alert('루틴 ID가 없습니다.');
+        return;
+      }
+      doneRehabProgram(rehabProgramId)
+        .then(() => {
+          alert('운동이 완료되었습니다!');
+        })
+        .catch((err) => {
+          alert('운동 완료 처리에 실패했습니다.');
+          console.error(err);
+        });
     },
     rescheduleExercise() {
       // 일정 변경 처리 로직
@@ -318,11 +313,13 @@ export default {
 
 /* 운동 이벤트 스타일링 */
 :deep(.exercise-event) {
-  padding: 0.3rem 0.5rem;
-  background-color: #f8f9ff;
-  border-left: 3px solid #365fff;
-  margin: 0.2rem 0;
-  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
 }
 
 :deep(.exercise-title) {
@@ -474,5 +471,26 @@ export default {
   :deep(.bodypart-badge) {
     font-size: 0.75rem;
   }
+}
+
+.exercise-badge {
+  display: inline-block;
+  background: #f8f9ff;
+  color: #365fff;
+  border-radius: 6px;
+  padding: 0.15em 0.6em;
+  font-size: 0.85em;
+  margin-right: 4px;
+  max-width: 90px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+.exercise-more {
+  display: inline;
+  color: #888;
+  font-size: 0.8em;
+  margin-left: 2px;
 }
 </style> 

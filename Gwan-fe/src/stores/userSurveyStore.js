@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
-import { getRehabPrograms } from '@/api/survey'
+import { getRehabPrograms, getAllPrescriptions } from '@/api/survey'
 import { useAuthStore } from './auth'
 
 export const useSurveyStore = defineStore('survey', () => {
@@ -85,7 +85,13 @@ export const useSurveyStore = defineStore('survey', () => {
             console.log('✅ 파싱 완료된 prescriptionData:', prescriptionData)
             console.log('📅 weeklyRoutine 추출:', prescriptionData.weeklyRoutine)
             
-            rehabPrograms.value = prescriptionData.weeklyRoutine || []
+            // rehabProgramId를 weeklyRoutine에 추가
+            const routineWithId = prescriptionData.weeklyRoutine.map(day => ({
+                ...day,
+                rehabProgramId: apiData.rehabProgramId
+            }))
+            
+            rehabPrograms.value = routineWithId || []
             
             console.log('🎯 최종 저장된 rehabPrograms:', rehabPrograms.value)
             console.log('📊 총 요일 수:', rehabPrograms.value.length)
@@ -267,6 +273,46 @@ export const useSurveyStore = defineStore('survey', () => {
         return true
     }
 
+    // 유저의 모든 운동 루틴(처방) 불러오기
+    const fetchAllPrescriptions = async () => {
+        const authStore = useAuthStore()
+        if (!authStore.isAuthenticated) {
+            throw new Error('로그인이 필요한 서비스입니다.')
+        }
+        isLoading.value = true
+        error.value = null
+        try {
+            const response = await getAllPrescriptions(true)
+            // response.data.data는 배열 (최신순 정렬 가정)
+            const prescriptions = response.data?.data || []
+            if (!prescriptions.length) {
+                rehabPrograms.value = []
+                return []
+            }
+            // prescription 필드 파싱 (가장 최근 것만 사용)
+            const latest = prescriptions[0]
+            if (!latest.prescription) {
+                rehabPrograms.value = []
+                return []
+            }
+            const prescriptionData = parsePrescription(latest.prescription)
+            
+            // rehabProgramId를 각 요일 데이터에 추가
+            const routineWithId = prescriptionData.weeklyRoutine.map(day => ({
+                ...day,
+                rehabProgramId: latest.rehabProgramId
+            }))
+            
+            rehabPrograms.value = routineWithId || []
+            return rehabPrograms.value
+        } catch (err) {
+            error.value = err.response?.data?.message || err.message || '운동 루틴을 불러오는데 실패했습니다.'
+            throw err
+        } finally {
+            isLoading.value = false
+        }
+    }
+
     return {
         formData,
         rehabPrograms,
@@ -275,6 +321,7 @@ export const useSurveyStore = defineStore('survey', () => {
         updateForm,
         resetForm,
         fetchRehabPrograms,
-        saveSurvey
+        saveSurvey,
+        fetchAllPrescriptions
     }
 })
