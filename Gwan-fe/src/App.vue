@@ -1,15 +1,18 @@
+
 <template>
     <div class="app-container">
-        <!-- 로그인 여부와 사용자 역할에 따라 헤더 선택 -->
-        <HeaderNav v-if="!authStore.isAuthenticated"/>
-        <HeaderAdminNav v-else-if="authStore.user?.role === 'ADMIN'"/>
-        <HeaderLoginedNav v-else/>
-
-        <main class="main-content"><router-view/></main>
-        <Footer/>
+        <div v-if="isInitializing">로딩 중...</div>
+        <div v-else>
+            <!-- 로그인 상태에 따라 헤더 렌더링 -->
+            <HeaderNav v-if="!authStore.isAuthenticated" />
+            <HeaderAdminNav v-else-if="authStore.user?.role === 'ADMIN'" />
+            <HeaderLoginedNav v-else />
+            <main class="main-content"><router-view /></main>
+            <Footer />
+        </div>
     </div>
-    
 </template>
+
 
 <script setup>
 import HeaderNav from './components/common/HeaderNav.vue'
@@ -17,15 +20,16 @@ import Footer from './components/common/Footer.vue'
 import HeaderLoginedNav from './components/common/HeaderLoginedNav.vue'
 import HeaderAdminNav from './components/common/HeaderAdminNav.vue'
 import { useAuthStore } from './stores/auth'
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const authStore = useAuthStore()
+const isInitializing = ref(true)
 
 onMounted(async () => {
     await authStore.initialize()
+    isInitializing.value = false
 })
 </script>
-
 <style>
     html, body, #app {
         margin: 0;
