@@ -8,9 +8,8 @@ export const useCommentStore = defineStore('comment', () => {
 
   // 리스트
   const comments = ref([]);
+  const myComments = ref([]);
   
-  
-
   const getComments = async (id) => {
     await axios.get(`${REST_API_URL}/${id}/comments`)
       .then((response) => {
@@ -20,7 +19,6 @@ export const useCommentStore = defineStore('comment', () => {
 
   const saveComment = async (videoId, content) => {
     try {
-    
         const response = await axios.post(`${REST_API_URL}/${videoId}/comments`, {
             content,
         }, {withCredentials: true});
@@ -30,7 +28,7 @@ export const useCommentStore = defineStore('comment', () => {
     }
   } 
 
-  const myComments = ref([]);
+  // 내 댓글 목록 조회
   const getMyComments = async () => {
     await axios.get(`http://localhost:8080/api/users/comments`, {withCredentials: true})
       .then((response) => {
@@ -39,6 +37,19 @@ export const useCommentStore = defineStore('comment', () => {
       })
   }
 
+  // 댓글 삭제 (비디오 페이지용)
+  const deleteComment = async (videoId, commentId) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/users/comments/${commentId}`, {
+        withCredentials: true
+      });
+      await getComments(videoId);
+    } catch (error) {
+      console.log("삭제 실패:", error);
+    }
+  }
+
+  // 댓글 삭제 (내 댓글 목록용)
   const removeComment = async (commentId) => {
     await axios.delete(`http://localhost:8080/api/users/comments/${commentId}`, {withCredentials: true})
       .then((response) => {
@@ -46,6 +57,21 @@ export const useCommentStore = defineStore('comment', () => {
       })
   }
 
+  // 댓글 수정 (비디오 페이지용)
+  const updateComment = async (videoId, commentId, content) => {
+    try {
+      await axios.put(`http://localhost:8080/api/users/comments/${commentId}`, {
+        content
+      }, {
+        withCredentials: true
+      });
+      await getComments(videoId);
+    } catch (error) {
+      console.log("수정 실패:", error);
+    }
+  }
+
+  // 댓글 수정 (내 댓글 목록용)
   const modifyComment = async (commentId, content) => {
     try {
       await axios.put(`http://localhost:8080/api/users/comments/${commentId}`, {
@@ -57,5 +83,15 @@ export const useCommentStore = defineStore('comment', () => {
     }
   }
 
-  return { comments, getComments, saveComment, getMyComments, myComments, removeComment, modifyComment }
+  return { 
+    comments, 
+    myComments,
+    getComments, 
+    saveComment, 
+    deleteComment, 
+    updateComment,
+    getMyComments,
+    removeComment,
+    modifyComment
+  }
 })
