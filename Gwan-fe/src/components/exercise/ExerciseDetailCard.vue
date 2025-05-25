@@ -31,6 +31,7 @@
 <script setup>
 import { useExerciseVideoStore } from '@/stores/exerciseVideoStore';
 import { useLikeStore } from '@/stores/likeStore';
+
 import { useAuthStore } from '@/stores/auth';
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router';
@@ -38,6 +39,7 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const exerciseVideoStore = useExerciseVideoStore();
 const likeStore = useLikeStore();
+
 const authStore = useAuthStore();
 
 onMounted(async () => {

@@ -28,31 +28,52 @@
       <p class="subtitle">운동 분석 결과</p>
 
       <div class="result-section">
-        <h3><i class="bi bi-lightning-charge text-primary"></i> 추천 운동</h3>
-        <ul class="recommendation-list">
-          <li v-for="(exercise, index) in result.recommendedExercises" :key="index">
-            <span class="exercise-name">{{ exercise.name }}</span>
-            <span class="exercise-desc">{{ exercise.description }}</span>
-          </li>
-        </ul>
+        <h3><i class="bi bi-lightning-charge text-primary"></i> 주간 운동 스케줄</h3>
+        <p class="schedule-intro">회원님을 위한 맞춤형 주간 운동 프로그램입니다.</p>
+        
+        <div v-if="result.weeklyRoutine && result.weeklyRoutine.length > 0" class="weekly-schedule">
+          <div v-for="(day, index) in result.weeklyRoutine" :key="`day-${index}`" class="day-schedule">
+            <div class="day-header">
+              <span class="day-name">{{ day.day || `${index + 1}일차` }}</span>
+              <span class="exercise-count" v-if="day.exercises && day.exercises.length > 0">
+                {{ day.exercises.length }}개 운동
+              </span>
+              <span class="rest-day" v-else>휴식일</span>
+            </div>
+            
+            <div v-if="day.exercises && day.exercises.length > 0" class="exercise-list">
+              <div v-for="(exercise, exerciseIndex) in day.exercises" :key="`exercise-${index}-${exerciseIndex}`" class="exercise-item">
+                <div class="exercise-header">
+                  <span class="exercise-name">{{ exercise.name || '운동명 없음' }}</span>
+                  <span class="exercise-duration">{{ exercise.duration || '시간 미정' }}</span>
+                </div>
+                <div class="exercise-details">
+                  <span class="exercise-category">{{ exercise.category || '카테고리 없음' }}</span>
+                  <span class="exercise-equipment" v-if="exercise.equipment && exercise.equipment !== '없음'">
+                    <i class="bi bi-gear"></i> {{ exercise.equipment }}
+                  </span>
+                </div>
+                <p class="exercise-note" v-if="exercise.note">{{ exercise.note }}</p>
+              </div>
+            </div>
+            
+            <div v-else class="rest-message">
+              <i class="bi bi-moon-stars"></i>
+              <span>{{ day.note || '충분한 휴식을 취하세요' }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div v-else class="no-routine-message">
+          <i class="bi bi-exclamation-triangle text-warning"></i>
+          <p>운동 프로그램을 생성하지 못했습니다.</p>
+          <p class="text-muted">설문을 다시 진행해주세요.</p>
+        </div>
       </div>
 
       <div class="result-section">
         <h3><i class="bi bi-info-circle text-warning"></i> 운동 시 주의사항</h3>
         <p class="caution-text">{{ result.caution }}</p>
-      </div>
-
-      <div class="result-section">
-        <h3><i class="bi bi-calendar-check text-success"></i> 추천 운동 루틴</h3>
-        <div class="routine-info">
-          <p>회원님께 맞춤형 운동 루틴이 생성되었습니다. 아래 버튼을 통해 확인하세요.</p>
-          <div class="routine-preview">
-            <div class="day-item" v-for="(day, index) in result.weeklyRoutine" :key="index">
-              <span class="day-label">{{ day.day }}</span>
-              <span class="exercise-count">{{ day.count }}개 운동</span>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="action-buttons">
@@ -97,49 +118,90 @@ const analyzeSurvey = async () => {
   error.value = null
   loadingProgress.value = 0
   
+  console.log('🎬 SurveyComplete: analyzeSurvey 시작')
+  
   // 로딩 진행 상태 시뮬레이션 시작
   const progressInterval = updateLoadingProgress()
   
   try {
-    // 실제 API 연동 시 여기에 구현
+    console.log('📞 SurveyComplete: API 호출 시작')
     
-    // 테스트를 위한 지연 시뮬레이션
-    await new Promise(resolve => setTimeout(resolve, 4000))
+    // 실제 API 호출로 개인화된 운동 프로그램 받기
+    const weeklyRoutine = await surveyStore.fetchRehabPrograms()
     
-    // 더미 데이터
-    result.value = {
-      recommendedExercises: [
-        { name: '골반 교정 스트레칭', description: '허리 통증 완화와 자세 교정에 효과적인 운동입니다. 하루 10분씩 진행하세요.' },
-        { name: '어깨 안정화 운동', description: '어깨 통증 감소와 기능 향상에 도움이 됩니다. 가벼운 아령으로 시작하세요.' },
-        { name: '코어 강화 운동', description: '허리와 복부 근육을 강화하여 전반적인 자세를 개선합니다.' },
-        { name: '목 근육 이완 운동', description: '목 통증 완화와 경직된 근육 이완에 도움이 됩니다. 매일 아침 진행하세요.' }
-      ],
-      caution: '현재 어깨 통증이 있으므로 무리한 운동은 피하고, 통증이 악화될 경우 즉시 운동을 중단하세요. 항상 워밍업을 충분히 하고, 점진적으로 강도를 높여가는 것이 중요합니다. 회원님의 몸 상태에 맞게 조절하세요.',
-      weeklyRoutine: [
-        { day: '월요일', count: 3 },
-        { day: '화요일', count: 0 },
-        { day: '수요일', count: 4 },
-        { day: '목요일', count: 0 },
-        { day: '금요일', count: 3 },
-        { day: '토요일', count: 2 },
-        { day: '일요일', count: 0 }
-      ]
+    console.log('📦 SurveyComplete: API에서 받은 weeklyRoutine:', weeklyRoutine)
+    console.log('🔢 SurveyComplete: weeklyRoutine 타입:', typeof weeklyRoutine)
+    console.log('📏 SurveyComplete: weeklyRoutine 배열 여부:', Array.isArray(weeklyRoutine))
+    console.log('📊 SurveyComplete: weeklyRoutine 길이:', weeklyRoutine ? weeklyRoutine.length : 'N/A')
+    
+    // 데이터 검증
+    if (!weeklyRoutine || !Array.isArray(weeklyRoutine)) {
+      console.error('❌ SurveyComplete: weeklyRoutine이 배열이 아니거나 존재하지 않습니다:', weeklyRoutine)
+      throw new Error('운동 프로그램 데이터가 올바르지 않습니다.')
     }
+    
+    if (weeklyRoutine.length === 0) {
+      console.warn('⚠️ SurveyComplete: weeklyRoutine이 비어있습니다.')
+      throw new Error('생성된 운동 프로그램이 없습니다.')
+    }
+    
+    // 각 요일별 데이터 검증 및 로그
+    console.log('🔍 SurveyComplete: 각 요일 데이터 검증')
+    weeklyRoutine.forEach((day, index) => {
+      console.log(`📅 SurveyComplete: ${index + 1}번째 요일 데이터:`, {
+        day: day.day,
+        date: day.date,
+        hasExercises: !!(day.exercises && day.exercises.length > 0),
+        exerciseCount: day.exercises ? day.exercises.length : 0,
+        note: day.note
+      })
+      
+      if (day.exercises && day.exercises.length > 0) {
+        console.log(`   💪 ${day.day} 운동 목록:`)
+        day.exercises.forEach((exercise, exIndex) => {
+          console.log(`      ${exIndex + 1}. ${exercise.name || '이름없음'} (${exercise.duration || '시간미정'})`)
+        })
+      } else {
+        console.log(`   😴 ${day.day}: 휴식일 또는 운동 없음`)
+      }
+    })
+    
+    // 전체 주간 루틴 데이터를 result에 포함
+    const resultData = {
+      caution: '개인의 건강 상태에 맞춘 운동 프로그램입니다. 통증이 심해지거나 불편함을 느끼시면 즉시 중단하고 전문의와 상담하세요.',
+      weeklyRoutine: weeklyRoutine // 전체 운동 데이터 포함
+    }
+    
+    console.log('🎯 SurveyComplete: 최종 result 설정 전 데이터:', resultData)
+    console.log('🎯 SurveyComplete: 설정할 weeklyRoutine:', resultData.weeklyRoutine)
+    
+    result.value = resultData
+    
+    console.log('✅ SurveyComplete: result.value 설정 완료:', result.value)
+    console.log('✅ SurveyComplete: result.value.weeklyRoutine:', result.value.weeklyRoutine)
+    console.log('✅ SurveyComplete: result.value.weeklyRoutine 길이:', result.value.weeklyRoutine ? result.value.weeklyRoutine.length : 'N/A')
     
   } catch (err) {
-    error.value = '결과 분석 중 오류가 발생했습니다. 다시 시도해주세요.'
-    console.error('설문 분석 오류:', err)
-  } finally {
-    // 로딩 진행 상태 업데이트 중지
-    clearInterval(progressInterval)
+    console.error('❌ SurveyComplete: 설문 분석 오류:', err)
+    console.error('❌ SurveyComplete: 에러 스택:', err.stack)
     
-    // 로딩 완료 처리 (너무 빨리 완료되면 100%까지 채워줌)
-    if (loadingProgress.value < 100) {
-      loadingProgress.value = 100
-      await new Promise(resolve => setTimeout(resolve, 500))
+    // 구체적인 에러 메시지 설정
+    if (err.message.includes('로그인')) {
+      error.value = '로그인이 필요합니다. 다시 로그인해주세요.'
+    } else if (err.message.includes('파싱')) {
+      error.value = '운동 프로그램 데이터를 처리하는 중 오류가 발생했습니다.'
+    } else if (err.message.includes('네트워크') || err.code === 'NETWORK_ERROR') {
+      error.value = '네트워크 연결을 확인해주세요.'
+    } else {
+      error.value = err.message || '결과 분석 중 오류가 발생했습니다. 다시 시도해주세요.'
     }
     
+    console.log('🚨 SurveyComplete: 최종 에러 메시지:', error.value)
+  } finally {
+    clearInterval(progressInterval)
+    loadingProgress.value = 100
     loading.value = false
+    console.log('🏁 SurveyComplete: analyzeSurvey 완료')
   }
 }
 
@@ -378,5 +440,173 @@ onMounted(() => {
 
 .btn-exercises:hover {
   background-color: #0b5ed7;
+}
+
+.schedule-intro {
+  color: #666;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.weekly-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.day-schedule {
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fafafa;
+}
+
+.day-header {
+  background: linear-gradient(135deg, var(--primary-color), #FF7043);
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.exercise-count {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.rest-day {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.exercise-list {
+  padding: 1rem;
+  background-color: white;
+}
+
+.exercise-item {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #f8f9ff;
+  border-radius: 8px;
+  border-left: 3px solid var(--primary-color);
+}
+
+.exercise-item:last-child {
+  margin-bottom: 0;
+}
+
+.exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.exercise-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+.exercise-duration {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.exercise-details {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.exercise-category {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.exercise-equipment {
+  color: #0d6efd;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.exercise-note {
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 0.5rem;
+  border-radius: 4px;
+  border-left: 2px solid #ddd;
+}
+
+.rest-message {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rest-message i {
+  font-size: 1.5rem;
+  color: #9ca3af;
+}
+
+.caution-text {
+  background-color: #fff8e6;
+  border-left: 3px solid #ffc107;
+  padding: 1rem;
+  border-radius: 4px;
+  line-height: 1.6;
+}
+
+.no-routine-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.no-routine-message i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.no-routine-message p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.no-routine-message .text-muted {
+  font-size: 0.9rem;
+  color: #6c757d;
 }
 </style> 

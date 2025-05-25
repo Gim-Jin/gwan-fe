@@ -56,6 +56,9 @@ onMounted(async () => {
   }
   
   commentStore.getComments(route.params.id);
+  
+  // 디버깅용
+  console.log('CommentSection mounted - authStore.user:', authStore.user);
 })
 
 // 댓글 입력값

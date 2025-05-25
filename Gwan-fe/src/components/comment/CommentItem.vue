@@ -140,6 +140,7 @@ const saveEdit = async () => {
   try {
     const commentId = props.comment.commentId || props.comment.id
     await commentStore.updateComment(route.params.id, commentId, editContent.value.trim())
+
     isEditing.value = false
     editContent.value = ''
   } catch (error) {
@@ -150,6 +151,7 @@ const saveEdit = async () => {
 // 댓글 삭제 함수
 const handleDelete = async () => {
   if (confirm('댓글을 삭제하시겠습니까?')) {
+
     try {
       const commentId = props.comment.commentId || props.comment.id
       await commentStore.deleteComment(route.params.id, commentId)

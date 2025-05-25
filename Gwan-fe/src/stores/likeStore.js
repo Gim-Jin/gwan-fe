@@ -35,6 +35,7 @@ export const useLikeStore = defineStore('like', () => {
       isLiked.value = !isLiked.value;
     } catch (error) {
       console.error('Error toggling like:', error);
+
       throw error;
     }
   };

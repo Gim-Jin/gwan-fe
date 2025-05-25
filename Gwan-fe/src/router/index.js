@@ -66,12 +66,24 @@ const router = createRouter({
 })
 
 // 인증이 필요한 라우트에 대한 가드 추가
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   
-  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    // 인증이 필요한 페이지인데 인증되지 않은 경우
-    next({ name: 'login', query: { redirect: to.fullPath } })
+  if (to.meta.requiresAuth) {
+    // 인증 복구가 필요한 경우 대기
+    if (!authStore.isAuthenticated) {
+      console.log('라우터 가드: 인증 복구 시도')
+      await authStore.initialize()
+    }
+    
+    // 인증 복구 후에도 인증되지 않은 경우
+    if (!authStore.isAuthenticated) {
+      console.log('라우터 가드: 인증 실패, 로그인으로 이동')
+      next({ name: 'login', query: { redirect: to.fullPath } })
+    } else {
+      console.log('라우터 가드: 인증 성공')
+      next()
+    }
   } else {
     next()
   }

@@ -6,7 +6,8 @@
       :key="video.id"
       class="card mb-3 p-3 d-flex flex-row align-items-center"
     >
-      <img
+    <img
+
         class="me-4"
         :src="`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`"
         :alt="video.title"
