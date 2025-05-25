@@ -9,6 +9,7 @@ import Mypage from '@/views/MypageView.vue'
 import ReviseMyInfoView from '@/views/ReviseMyInfoView.vue'
 import MypageView from '@/views/MypageView.vue'
 import SurveyComplete from '@/components/survey/SurveyComplete.vue'
+import AdminUserManagementView from '@/views/AdminUserManagementView.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
@@ -61,6 +62,12 @@ const router = createRouter({
       path: '/survey/complete',
       name: 'surveyComplete',
       component: SurveyComplete
+    },
+    {
+      path: '/admin/users',
+      name: 'adminUserManagement',
+      component: AdminUserManagementView,
+      meta: { requiresAuth: true, requiresAdmin: true }
     }
   ],
 })
@@ -80,10 +87,21 @@ router.beforeEach(async (to, from, next) => {
     if (!authStore.isAuthenticated) {
       console.log('라우터 가드: 인증 실패, 로그인으로 이동')
       next({ name: 'login', query: { redirect: to.fullPath } })
-    } else {
-      console.log('라우터 가드: 인증 성공')
-      next()
+      return
     }
+    
+    // 관리자 권한이 필요한 페이지 체크
+    if (to.meta.requiresAdmin) {
+      if (!authStore.user || authStore.user.role !== 'ADMIN') {
+        console.log('라우터 가드: 관리자 권한 없음, 홈으로 이동')
+        alert('관리자 권한이 필요한 페이지입니다.')
+        next({ name: 'home' })
+        return
+      }
+    }
+    
+    console.log('라우터 가드: 인증 성공')
+    next()
   } else {
     next()
   }
