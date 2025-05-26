@@ -10,15 +10,25 @@
         <h5 class="card-title">{{ video.title }}</h5>
         <p class="card-text small text-muted">{{ video.targetName }}</p>
       </div>
-      <a :href="video.url" target="_blank" class="btn btn-primary btn-sm mt-3">영상 보기</a>
+      <button @click="goToDetail" class="btn btn-primary btn-sm mt-3">영상 보기</button>
     </div>
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const props = defineProps({
   video: Object,
-})
+});
+
+const goToDetail = () => {
+  router.push({
+    name: 'exerciseDetail',
+    params: { id: props.video.exerciseVideoId }
+  });
+};
 </script>
 
 <style scoped>

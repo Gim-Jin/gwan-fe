@@ -1,6 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import ExerciseView from '@/views/ExerciseView.vue'
+import ExerciseDetailView from '@/views/ExerciseDetailView.vue'
+import LoginComponent from '@/components/login/LoginComponent.vue'
+import SignupComponent from '@/components/signup/SignupComponent.vue'
+import MyRoutineView from '@/views/MyRoutineView.vue'
+import Mypage from '@/views/MypageView.vue'
+import ReviseMyInfoView from '@/views/ReviseMyInfoView.vue'
+import MypageView from '@/views/MypageView.vue'
+import SurveyComplete from '@/components/survey/SurveyComplete.vue'
+import AdminManagement from '@/views/AdminManagement.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,15 +24,87 @@ const router = createRouter({
       path: "/exercises",
       name: "exercises",
       component: ExerciseView,
-      children: [
-        // {
-        //   path: ":id",
-        //   name: "exerciseDetail",
-        //   component: BoardList,
-        // },
-      ],
     },
+    {
+      path: "/exercises/:id",
+      name: "exerciseDetail",
+      component: ExerciseDetailView,
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginComponent,
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: SignupComponent,
+    },
+    {
+      path: '/my-routine',
+      name: 'myRoutine',
+      component: MyRoutineView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/mypage',
+      name: 'mypage',
+      component: MypageView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/mypage/info-revise',
+      name: 'infoRevise',
+      component: ReviseMyInfoView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/survey/complete',
+      name: 'surveyComplete',
+      component: SurveyComplete
+    },
+    {
+      path: '/admin/users',
+      name: 'adminManagement',
+      component: AdminManagement,
+      meta: { requiresAuth: true, requiresAdmin: true }
+    }
   ],
+})
+
+// 인증이 필요한 라우트에 대한 가드 추가
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore()
+  
+  if (to.meta.requiresAuth) {
+    // 인증 복구가 필요한 경우 대기
+    if (!authStore.isAuthenticated) {
+      console.log('라우터 가드: 인증 복구 시도')
+      await authStore.initialize()
+    }
+    
+    // 인증 복구 후에도 인증되지 않은 경우
+    if (!authStore.isAuthenticated) {
+      console.log('라우터 가드: 인증 실패, 로그인으로 이동')
+      next({ name: 'login', query: { redirect: to.fullPath } })
+      return
+    }
+    
+    // 관리자 권한이 필요한 페이지 체크
+    if (to.meta.requiresAdmin) {
+      if (!authStore.user || authStore.user.role !== 'ADMIN') {
+        console.log('라우터 가드: 관리자 권한 없음, 홈으로 이동')
+        alert('관리자 권한이 필요한 페이지입니다.')
+        next({ name: 'home' })
+        return
+      }
+    }
+    
+    console.log('라우터 가드: 인증 성공')
+    next()
+  } else {
+    next()
+  }
 })
 
 export default router

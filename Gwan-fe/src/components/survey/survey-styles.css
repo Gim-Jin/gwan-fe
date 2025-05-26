@@ -1,0 +1,58 @@
+/* Survey 공통 스타일 */
+.survey-card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  max-width: 500px;
+  margin: 0 auto;
+}
+.step-indicator {
+  font-size: 0.9rem;
+  color: gray;
+  margin-bottom: 0.5rem;
+}
+.title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+input, select {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+button {
+  background-color: #365FFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1.4rem;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+button:hover {
+  background-color: #2f50c0;
+}
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+} 
