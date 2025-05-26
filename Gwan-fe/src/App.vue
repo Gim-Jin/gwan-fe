@@ -10,7 +10,14 @@
             <HeaderNav v-if="!authStore.isAuthenticated" />
             <HeaderAdminNav v-else-if="currentUserRole === 'ADMIN'" />
             <HeaderLoginedNav v-else />
-            <main class="main-content"><router-view /></main>
+     
+            <main class="main-content">
+                <router-view v-slot="{ Component }">
+                <transition name="page" mode="out-in">
+                    <component :is="Component" :key="$route.fullPath" />
+                </transition>
+            </router-view>
+            </main>
             <Footer />
         </div>
     </div>
@@ -104,4 +111,23 @@ onMounted(async () => {
     html,body{
         caret-color: transparent;
     } */
+     /* ---------- 라우트 전환 애니메이션 ---------- */
+.page-enter-from,
+.page-leave-to   {       /* 초기/퇴장 상태 */
+  opacity: 0;
+  transform: translateY(20px);   /* 아래서 위로 슬라이드  */
+}
+
+.page-enter-to,
+.page-leave-from {       /* 최종/시작 상태 */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 트랜지션 시간·곡선만 조절해도 느낌 확 달라져요 */
+.page-enter-active,
+.page-leave-active {
+  transition: all 350ms cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+
 </style>

@@ -290,21 +290,34 @@ export default {
   color: #E74C3C;
 }
 
+/* 달력 속에 숫자 글자 조절 가능한 부분 */
 :deep(.fc-daygrid-day-number) {
   font-weight: 700;
   font-size: 1.05rem;
   padding: 0.6rem;
+    text-decoration: none !important; 
+  color: #fa8a65 !important; 
 }
 
 :deep(.fc-daygrid-day-top) {
   justify-content: flex-start;
   padding-left: 0.5rem;
+  
+}
+
+/* 요일쪽 글자 조절 가능한 부분 */
+:deep(.fc-col-header-cell-cushion) {
+  color: #fa8a65 !important;        
+  font-weight: 700;                  
+  font-size: 1.1rem;                 
+  text-decoration: none !important;  
 }
 
 /* 날짜 셀 높이 설정 */
 :deep(.fc-daygrid-day) {
   min-height: clamp(140px, 16vw, 220px);
   transition: background-color 0.2s;
+  
 }
 
 :deep(.fc-daygrid-day:hover) {

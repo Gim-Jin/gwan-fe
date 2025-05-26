@@ -3,7 +3,7 @@
     <!-- 로그인 카드 -->
     <div class="login-card">
       <div class="login-header">
-        <i class="bi bi-person-circle" style="font-size: 2rem; color: #3b82f6;"></i>
+        <i class="bi bi-person-circle" style="font-size: 2rem; color: #fa8a65;"></i>
         <h2>로그인</h2>
       </div>
 
@@ -155,7 +155,7 @@ const handleLogin = async () => {
 .login-btn {
   width: 100%;
   padding: 0.75rem;
-  background-color: #3b82f6;
+  background-color: #fa8a65;
   color: white;
   font-weight: 600;
   border: none;

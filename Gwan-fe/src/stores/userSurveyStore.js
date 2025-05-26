@@ -6,8 +6,8 @@ import { useAuthStore } from './auth'
 export const useSurveyStore = defineStore('survey', () => {
     const formData = reactive({
         // Step 1
-        painArea: '',
-        painLevel: '',
+        painArea: 'NECK',
+        painLevel: '5',
         painPattern: '',
         painTrigger: '',
         painStartTime: '',

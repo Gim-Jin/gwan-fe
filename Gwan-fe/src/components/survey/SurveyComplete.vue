@@ -1,88 +1,90 @@
 <template>
-  <div class="survey-card result-card">
-    <div v-if="loading" class="loading-container">
-      <div class="loading-icon">
-        <div class="spinner"></div>
-      </div>
-      <h3 class="loading-title">설문 분석 중</h3>
-      <p class="loading-text">회원님의 데이터를 분석하여 최적의 운동을 추천하고 있습니다.</p>
-      <div class="loading-progress">
-        <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: `${loadingProgress}%` }"></div>
+  <div class="survey-complete-center">
+    <div class="survey-card result-card">
+      <div v-if="loading" class="loading-container">
+        <div class="loading-icon">
+          <div class="spinner"></div>
         </div>
-        <span class="progress-text">{{ loadingProgress }}% 완료</span>
+        <h3 class="loading-title">설문 분석 중</h3>
+        <p class="loading-text">회원님의 데이터를 분석하여 최적의 운동을 추천하고 있습니다.</p>
+        <div class="loading-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" :style="{ width: `${loadingProgress}%` }"></div>
+          </div>
+          <span class="progress-text">{{ loadingProgress }}% 완료</span>
+        </div>
       </div>
-    </div>
 
-    <div v-else-if="error" class="error-message">
-      <i class="bi bi-exclamation-circle text-danger icon-large"></i>
-      <p>{{ error }}</p>
-      <button @click="retryAnalysis" class="retry-btn">다시 시도</button>
-    </div>
-
-    <div v-else class="result-content">
-      <div class="success-icon">
-        <i class="bi bi-check-circle-fill text-success icon-large"></i>
+      <div v-else-if="error" class="error-message">
+        <i class="bi bi-exclamation-circle text-danger icon-large"></i>
+        <p>{{ error }}</p>
+        <button @click="retryAnalysis" class="retry-btn">다시 시도</button>
       </div>
-      <h2 class="title">설문 완료</h2>
-      <p class="subtitle">운동 분석 결과</p>
 
-      <div class="result-section">
-        <h3><i class="bi bi-lightning-charge text-primary"></i> 주간 운동 스케줄</h3>
-        <p class="schedule-intro">회원님을 위한 맞춤형 주간 운동 프로그램입니다.</p>
-        
-        <div v-if="result.weeklyRoutine && result.weeklyRoutine.length > 0" class="weekly-schedule">
-          <div v-for="(day, index) in result.weeklyRoutine" :key="`day-${index}`" class="day-schedule">
-            <div class="day-header">
-              <span class="day-name">{{ day.day || `${index + 1}일차` }}</span>
-              <span class="exercise-count" v-if="day.exercises && day.exercises.length > 0">
-                {{ day.exercises.length }}개 운동
-              </span>
-              <span class="rest-day" v-else>휴식일</span>
-            </div>
-            
-            <div v-if="day.exercises && day.exercises.length > 0" class="exercise-list">
-              <div v-for="(exercise, exerciseIndex) in day.exercises" :key="`exercise-${index}-${exerciseIndex}`" class="exercise-item">
-                <div class="exercise-header">
-                  <span class="exercise-name">{{ exercise.name || '운동명 없음' }}</span>
-                  <span class="exercise-duration">{{ exercise.duration || '시간 미정' }}</span>
+      <div v-else class="result-content">
+        <div class="success-icon">
+          <i class="bi bi-check-circle-fill text-success icon-large"></i>
+        </div>
+        <h2 class="title">설문 완료</h2>
+        <p class="subtitle">운동 분석 결과</p>
+
+        <div class="result-section">
+          <h3><i class="bi bi-lightning-charge text-primary"></i> 주간 운동 스케줄</h3>
+          <p class="schedule-intro">회원님을 위한 맞춤형 주간 운동 프로그램입니다.</p>
+          
+          <div v-if="result.weeklyRoutine && result.weeklyRoutine.length > 0" class="weekly-schedule">
+            <div v-for="(day, index) in result.weeklyRoutine" :key="`day-${index}`" class="day-schedule">
+              <div class="day-header">
+                <span class="day-name">{{ day.day || `${index + 1}일차` }}</span>
+                <span class="exercise-count" v-if="day.exercises && day.exercises.length > 0">
+                  {{ day.exercises.length }}개 운동
+                </span>
+                <span class="rest-day" v-else>휴식일</span>
+              </div>
+              
+              <div v-if="day.exercises && day.exercises.length > 0" class="exercise-list">
+                <div v-for="(exercise, exerciseIndex) in day.exercises" :key="`exercise-${index}-${exerciseIndex}`" class="exercise-item">
+                  <div class="exercise-header">
+                    <span class="exercise-name">{{ exercise.name || '운동명 없음' }}</span>
+                    <span class="exercise-duration">{{ exercise.duration || '시간 미정' }}</span>
+                  </div>
+                  <div class="exercise-details">
+                    <span class="exercise-category">{{ exercise.category || '카테고리 없음' }}</span>
+                    <span class="exercise-equipment" v-if="exercise.equipment && exercise.equipment !== '없음'">
+                      <i class="bi bi-gear"></i> {{ exercise.equipment }}
+                    </span>
+                  </div>
+                  <p class="exercise-note" v-if="exercise.note">{{ exercise.note }}</p>
                 </div>
-                <div class="exercise-details">
-                  <span class="exercise-category">{{ exercise.category || '카테고리 없음' }}</span>
-                  <span class="exercise-equipment" v-if="exercise.equipment && exercise.equipment !== '없음'">
-                    <i class="bi bi-gear"></i> {{ exercise.equipment }}
-                  </span>
-                </div>
-                <p class="exercise-note" v-if="exercise.note">{{ exercise.note }}</p>
+              </div>
+              
+              <div v-else class="rest-message">
+                <i class="bi bi-moon-stars"></i>
+                <span>{{ day.note || '충분한 휴식을 취하세요' }}</span>
               </div>
             </div>
-            
-            <div v-else class="rest-message">
-              <i class="bi bi-moon-stars"></i>
-              <span>{{ day.note || '충분한 휴식을 취하세요' }}</span>
-            </div>
+          </div>
+          
+          <div v-else class="no-routine-message">
+            <i class="bi bi-exclamation-triangle text-warning"></i>
+            <p>운동 프로그램을 생성하지 못했습니다.</p>
+            <p class="text-muted">설문을 다시 진행해주세요.</p>
           </div>
         </div>
-        
-        <div v-else class="no-routine-message">
-          <i class="bi bi-exclamation-triangle text-warning"></i>
-          <p>운동 프로그램을 생성하지 못했습니다.</p>
-          <p class="text-muted">설문을 다시 진행해주세요.</p>
+
+        <div class="result-section">
+          <h3><i class="bi bi-info-circle text-warning"></i> 운동 시 주의사항</h3>
+          <p class="caution-text">{{ result.caution }}</p>
         </div>
-      </div>
 
-      <div class="result-section">
-        <h3><i class="bi bi-info-circle text-warning"></i> 운동 시 주의사항</h3>
-        <p class="caution-text">{{ result.caution }}</p>
-      </div>
-
-      <div class="action-buttons">
-        <router-link :to="{name: 'myRoutine'}" class="btn-routine">
-          <i class="bi bi-calendar-week"></i> 나의 루틴 확인하기
-        </router-link>
-        <router-link :to="{name: 'exercises'}" class="btn-exercises">
-          <i class="bi bi-play-circle"></i> 운동 시작하기
-        </router-link>
+        <div class="action-buttons">
+          <router-link :to="{name: 'myRoutine'}" class="btn-routine">
+            <i class="bi bi-calendar-week"></i> 나의 루틴 확인하기
+          </router-link>
+          <router-link :to="{name: 'exercises'}" class="btn-exercises">
+            <i class="bi bi-play-circle"></i> 운동 시작하기
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
@@ -217,8 +219,29 @@ onMounted(() => {
 <style scoped>
 @import './survey-styles.css';
 
+.survey-complete-center {
+  min-height: calc(100vh - 80px);
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  margin-top: 80px;
+  padding: 2rem 0;
+}
+
 .result-card {
-  max-width: 650px;
+   max-width: 700px;
+  width: 100%;
+  min-height: 520px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  margin: 0;
+  border-radius: 24px;
+  background: #fff;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .loading-container {
@@ -227,7 +250,8 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  height: 100%;
+  height: 400px;
+  min-height: 400px;
 }
 
 .loading-icon {
@@ -290,147 +314,75 @@ onMounted(() => {
 
 .success-icon {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 .icon-large {
   font-size: 2.5rem;
 }
 
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
 .subtitle {
   text-align: center;
   color: #666;
-  margin-bottom: 2rem;
-}
-
-.error-message {
-  text-align: center;
-  color: #dc3545;
-  margin: 2rem 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.retry-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  margin-top: 1rem;
-  cursor: pointer;
+  margin-bottom: 1.5rem;
 }
 
 .result-section {
   margin-bottom: 2rem;
-  background-color: white;
-  border-radius: 10px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.result-section h3 {
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-  color: #333;
+  background-color: #fff;
+  border-radius: 18px;
+  padding: 2rem 1.5rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  width: 100%;
+  max-width: 600px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1.2rem;
 }
 
-.recommendation-list {
-  list-style: none;
-  padding: 0;
-}
-
-.recommendation-list li {
-  padding: 1rem;
-  border-left: 3px solid #3b82f6;
-  background-color: #f8f9fa;
-  margin-bottom: 1rem;
-  border-radius: 4px;
-}
-
-.exercise-name {
-  font-weight: 600;
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-}
-
-.exercise-desc {
-  font-size: 0.95rem;
-  color: #666;
-  line-height: 1.5;
-}
-
-.caution-text {
-  background-color: #fff8e6;
-  border-left: 3px solid #ffc107;
-  padding: 1rem;
-  border-radius: 4px;
-  line-height: 1.6;
-}
-
-.routine-info {
-  margin-top: 0.5rem;
-}
-
-.routine-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-top: 1rem;
-}
-
-.day-item {
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  padding: 0.8rem;
-  min-width: 100px;
-  text-align: center;
-  border: 1px solid #e9ecef;
-}
-
-.day-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.3rem;
-}
-
-.exercise-count {
-  font-size: 0.9rem;
-  color: #666;
+.result-section:last-child {
+  margin-bottom: 0;
 }
 
 .action-buttons {
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  width: 100%;
+  justify-content: center;
 }
 
 .btn-routine, .btn-exercises {
   flex: 1;
   text-align: center;
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 1.1rem 0;
+  border-radius: 12px;
   text-decoration: none;
   font-weight: 500;
+  font-size: 1.1rem;
   transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
 }
 
 .btn-routine {
-  background-color: #e7f1ff;
-  color: #0d6efd;
+  background-color: #fef7f0;
+  color: #fa8a65;
 }
 
 .btn-exercises {
-  background-color: #0d6efd;
+  background-color: #fa8a65;
   color: white;
 }
 
@@ -608,5 +560,16 @@ onMounted(() => {
 .no-routine-message .text-muted {
   font-size: 0.9rem;
   color: #6c757d;
+}
+
+@media (max-width: 900px) {
+  .result-card {
+    padding: 1.2rem 0.5rem;
+    max-width: 98vw;
+  }
+  .result-section {
+    padding: 1.2rem 0.5rem;
+    max-width: 98vw;
+  }
 }
 </style> 

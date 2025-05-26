@@ -69,7 +69,16 @@ const router = createRouter({
       component: AdminManagement,
       meta: { requiresAuth: true, requiresAdmin: true }
     }
-  ],
+  ],  
+  scrollBehavior(to, from, savedPosition) {
+    // 브라우저 뒤/앞 버튼이면 savedPosition이 있으니 그대로 복원
+    if (savedPosition) return savedPosition
+
+    // 그 외에는 항상 화면 맨 위로
+    // { top: 0 } → 수직 0,  { left: 0, top: 0 } 로 써도 동일
+    return { top: 0 }
+  }
+  
 })
 
 // 인증이 필요한 라우트에 대한 가드 추가
