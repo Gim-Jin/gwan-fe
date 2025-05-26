@@ -11,7 +11,6 @@
     </div>
 
     <div class="header-right">
-      <input class="search-input" type="text" placeholder="운동을 검색해보세요" />
       <RouterLink :to="{name : 'mypage'}">마이페이지</RouterLink>
       <button @click="handleLogout" class="logout-btn">로그아웃</button>
     </div>
@@ -21,13 +20,10 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { onMounted } from 'vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
-
-function search() {
-  alert('검색 기능은 아직 구현되지 않았습니다.')
-}
 
 async function handleLogout() {
   try {
@@ -37,6 +33,14 @@ async function handleLogout() {
     console.error('로그아웃 실패:', err)
   }
 }
+
+onMounted(async () => {
+  try {
+    await authStore.initialize()
+  } catch (error) {
+    console.error('인증 초기화 실패:', error)
+  }
+})
 </script>
 
 <style scoped>

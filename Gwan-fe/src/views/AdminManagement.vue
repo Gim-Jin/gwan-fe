@@ -4,7 +4,7 @@
     <div class="admin-header mb-4">
       <div class="d-flex align-items-center mb-3">
         <i class="bi bi-person-gear me-3" style="font-size: 2rem; color: #FF8A65;"></i>
-        <h2 class="mb-0" style="color: #3A3A3A;">유저 관리</h2>
+        <h2 class="mb-0" style="color: #3A3A3A;">관리자 페이지</h2>
       </div>
       <p class="text-muted">등록된 사용자들을 관리하고 모니터링할 수 있습니다.</p>
     </div>
@@ -28,8 +28,8 @@
             <i class="bi bi-person-check-fill"></i>
           </div>
           <div class="stat-content">
-            <h3>{{ stats.activeUsers }}</h3>
-            <p>활성 사용자</p>
+            <h3>{{ stats.generalUsers }}</h3>
+            <p>일반 유저</p>
           </div>
         </div>
       </div>
@@ -39,8 +39,8 @@
             <i class="bi bi-person-plus-fill"></i>
           </div>
           <div class="stat-content">
-            <h3>{{ stats.newUsersToday }}</h3>
-            <p>오늘 가입</p>
+            <h3>{{ stats.advisorUsers }}</h3>
+            <p>처방사</p>
           </div>
         </div>
       </div>
@@ -82,13 +82,6 @@
             <option value="ADMIN">관리자</option>
           </select>
         </div>
-        <div class="col-md-3">
-          <select class="form-select" v-model="statusFilter" @change="handleFilterChange">
-            <option value="">모든 상태</option>
-            <option value="active">활성</option>
-            <option value="inactive">비활성</option>
-          </select>
-        </div>
       </div>
     </div>
 
@@ -124,8 +117,8 @@ const statusFilter = ref('');
 // 통계 데이터
 const stats = ref({
   totalUsers: 0,
-  activeUsers: 0,
-  newUsersToday: 0,
+  generalUsers: 0,
+  advisorUsers: 0,
   adminUsers: 0
 });
 
@@ -150,8 +143,8 @@ const fetchUsers = async () => {
 const updateStats = (userData) => {
   stats.value = {
     totalUsers: userData.length,
-    activeUsers: userData.filter(u => !u.deleted).length,
-    newUsersToday: userData.filter(u => isToday(u.createdAt)).length,
+    generalUsers: userData.filter(u => u.role === 'GENERAL').length,
+    advisorUsers: userData.filter(u => u.role === 'ADVISOR' || u.role === 'PRESCRIBER').length,
     adminUsers: userData.filter(u => u.role === 'ADMIN').length
   };
 };

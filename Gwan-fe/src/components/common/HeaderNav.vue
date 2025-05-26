@@ -11,7 +11,6 @@
     </div>
 
     <div class="header-right">
-      <input class="search-input" type="text" placeholder="운동을 검색해보세요" />
       <RouterLink :to="{name : 'signup'}"><i class="bi bi-person text-primary icon-large"></i> 회원가입</RouterLink>
       <RouterLink :to="{name : 'login'}"><i class="bi bi-key text-info icon-large"></i> 로그인</RouterLink>
     </div>
@@ -20,9 +19,6 @@
 
 
 <script setup>
-function search() {
-  alert('검색 기능은 아직 구현되지 않았습니다.')
-}
 </script>
 
 <style scoped>

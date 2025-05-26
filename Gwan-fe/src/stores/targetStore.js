@@ -19,7 +19,7 @@ export const useTargetStore = defineStore('target', () => {
     try {
       const res = await fetch('http://localhost:8080/api/targets?sort=popular')
       const data = await res.json()
-      popularTargetList.value = (data.data || []).slice(0, 5)
+      popularTargetList.value = (data.data || [])
     } catch (e) {
       popularTargetList.value = []
     }

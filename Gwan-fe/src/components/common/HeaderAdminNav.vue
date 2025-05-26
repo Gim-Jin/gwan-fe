@@ -12,8 +12,7 @@
     </div>
 
     <div class="header-right">
-      <input class="search-input" type="text" placeholder="운동을 검색해보세요" />
-      <RouterLink :to="{name : 'mypage'}">마이페이지</RouterLink>
+       <RouterLink :to="{name : 'mypage'}">마이페이지</RouterLink>
       <button @click="handleLogout" class="logout-btn">로그아웃</button>
     </div>
   </header>
@@ -26,9 +25,6 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 
-function search() {
-  alert('검색 기능은 아직 구현되지 않았습니다.')
-}
 
 async function handleLogout() {
   try {

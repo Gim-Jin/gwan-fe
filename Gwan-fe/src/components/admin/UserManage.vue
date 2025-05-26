@@ -21,18 +21,17 @@
               <th>역할</th>
               <th>가입일</th>
               <th>활동</th>
-              <th>상태</th>
               <th>관리</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in paginatedUsers" :key="user.id">
+            <tr v-for="user in paginatedUsers" :key="user.userId">
               <td>
                 <ProfileAvatar :userType="getUserType(user)" :size="40" />
               </td>
               <td>
                 <div>
-                  <strong>{{ user.name }}</strong>
+                  <strong>{{ user.nickname || user.nickName }}</strong>
                   <br>
                   <small class="text-muted">{{ user.email }}</small>
                 </div>
@@ -43,7 +42,7 @@
                 </span>
               </td>
               <td>
-                <small>{{ formatDate(user.createTime) }}</small>
+                <small>{{ formatDate(user.createdAt) }}</small>
               </td>
               <td>
                 <div class="activity-stats">
@@ -52,11 +51,6 @@
                     <i class="bi bi-chat-dots text-info ms-2"></i> {{ user.commentCnt || 0 }}
                   </small>
                 </div>
-              </td>
-              <td>
-                <span class="badge" :class="user.isActive ? 'bg-success' : 'bg-secondary'">
-                  {{ user.isActive ? '활성' : '비활성' }}
-                </span>
               </td>
               <td>
                 <div class="btn-group btn-group-sm">
@@ -116,6 +110,7 @@
             <select id="editUserRole" v-model="editingUser.role">
               <option value="GENERAL">일반 사용자</option>
               <option value="ADVISOR">처방사</option>
+              <option value="PRESCRIBER">처방사</option>
               <option value="ADMIN">관리자</option>
             </select>
           </div>
@@ -205,7 +200,7 @@ const showBackdrop = ref(false);
 const editingUser = ref({
   userId: '',
   loginId: '',
-  name: '',
+  nickname: '',
   email: '',
   password: '',
   role: ''
@@ -238,18 +233,19 @@ const filterUsers = () => {
   if (props.searchQuery) {
     const query = props.searchQuery.toLowerCase();
     filtered = filtered.filter(user =>
-      user.name?.toLowerCase().includes(query) ||
+      (user.name?.toLowerCase().includes(query) ||
+       user.nickname?.toLowerCase().includes(query) ||
+       user.nickName?.toLowerCase().includes(query)) ||
       user.email?.toLowerCase().includes(query)
     );
   }
 
   if (props.roleFilter) {
-    filtered = filtered.filter(user => user.role === props.roleFilter);
-  }
-
-  if (props.statusFilter) {
-    const isActive = props.statusFilter === 'active';
-    filtered = filtered.filter(user => user.isActive === isActive);
+    if (props.roleFilter === 'ADVISOR') {
+      filtered = filtered.filter(user => user.role === 'ADVISOR' || user.role === 'PRESCRIBER');
+    } else {
+      filtered = filtered.filter(user => user.role === props.roleFilter);
+    }
   }
 
   filteredUsers.value = filtered;
@@ -275,8 +271,9 @@ watch(() => props.statusFilter, () => {
 
 // 유틸리티 함수들
 const getUserType = (user) => {
-  if (user.role === 'ADMIN') return 'admin';
-  if (user.role === 'ADVISOR') return 'prescriber';
+  const role = (user.role || '').toUpperCase();
+  if (role === 'ADMIN') return 'admin';
+  if (role === 'PRESCRIBER' || role === 'ADVISOR') return 'prescriber';
   return 'user';
 };
 
@@ -284,6 +281,7 @@ const getRoleLabel = (role) => {
   const labels = {
     'GENERAL': '일반 사용자',
     'ADVISOR': '처방사',
+    'PRESCRIBER': '처방사',
     'ADMIN': '관리자'
   };
   return labels[role] || role;
@@ -293,6 +291,7 @@ const getRoleBadgeClass = (role) => {
   const classes = {
     'GENERAL': 'bg-primary',
     'ADVISOR': 'bg-success',
+    'PRESCRIBER': 'bg-success',
     'ADMIN': 'bg-danger'
   };
   return classes[role] || 'bg-secondary';
@@ -325,7 +324,8 @@ const editUser = (user) => {
   editingUser.value = {
     userId: user.userId || user.id,
     loginId: user.loginId,
-    name: user.nickname || '',
+    name: user.nickname || user.nickName || '',
+    nickname: user.nickname || user.nickName || '',
     email: user.email || '',
     password: user.password || '',
     role: user.role
@@ -341,10 +341,12 @@ const submitUserEdit = async () => {
   }
 
   try {
+    // name과 nickname 동기화
+    editingUser.value.nickname = editingUser.value.name;
     const updateData = {
       loginId: editingUser.value.loginId,
       email: editingUser.value.email,
-      nickname: editingUser.value.name,
+      nickname: editingUser.value.nickname,
       role: editingUser.value.role,
       password: editingUser.value.password
     };
@@ -365,7 +367,14 @@ const submitUserEdit = async () => {
 
 const toggleUserStatus = (user) => {
   if (user.role === 'ADMIN') return;
-  editingUser.value = user;
+  editingUser.value = {
+    userId: user.userId || user.id,
+    loginId: user.loginId,
+    name: user.nickname || user.nickName || '',
+    email: user.email || '',
+    password: user.password || '',
+    role: user.role
+  };
   showDeleteModal.value = true;
 };
 
