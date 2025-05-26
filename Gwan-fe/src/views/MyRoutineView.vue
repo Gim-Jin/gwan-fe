@@ -234,6 +234,7 @@ const generateWeeklyRoutineFromPrograms = (programs) => {
 .calendar-section {
   width: 100%;
   margin: 0 auto;
+  
 }
 
 /* 모달 스타일 */
