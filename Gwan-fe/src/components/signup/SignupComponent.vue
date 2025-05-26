@@ -1,8 +1,8 @@
 <template>
-  <div class="signup-wrapper">
+  <div class="signup-wrapper mt-3">
     <div class="signup-card">
       <div class="signup-header">
-        <i class="bi bi-person-plus" style="font-size: 2rem; color: #3b82f6;"></i>
+        <i class="bi bi-person-plus" style="font-size: 2rem; color: #fa8a65;"></i>
         <h2>회원가입</h2>
       </div>
 
@@ -132,7 +132,7 @@ const submit = async (e) => {
 .signup-btn {
   width: 100%;
   padding: 0.75rem;
-  background-color: #3b82f6;
+  background-color: #fa8a65;
   color: white;
   font-weight: 600;
   border: none;
