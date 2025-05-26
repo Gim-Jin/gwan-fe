@@ -34,13 +34,13 @@ function recommend() {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #f8f9fa;
-  border: 2px solid #e9ecef;
+  background: #fff2eb;
+  border: 2px solid #ffe0d3;
   border-radius: 12px;
   padding: 0.6rem 1.2rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #495057;
+  color: #b26a4c;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -54,7 +54,7 @@ function recommend() {
   left: 50%;
   width: 0;
   height: 0;
-  background: rgba(52, 152, 219, 0.1);
+  background: rgba(255, 138, 101, 0.08);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   transition: width 0.4s ease, height 0.4s ease;
@@ -66,11 +66,11 @@ function recommend() {
 }
 
 .recommend-btn:hover:not(:disabled) {
-  background: white;
-  border-color: #3498db;
-  color: #3498db;
+  background: var(--secondary-color);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+  box-shadow: 0 4px 12px rgba(255, 138, 101, 0.13);
 }
 
 .recommend-btn:active:not(:disabled) {
@@ -78,14 +78,14 @@ function recommend() {
 }
 
 .recommend-btn.active {
-  background: #3498db;
-  border-color: #3498db;
-  color: white;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--secondary-color);
 }
 
 .recommend-btn.active:hover:not(:disabled) {
-  background: #2980b9;
-  border-color: #2980b9;
+  background: var(--primary-hover-color);
+  border-color: var(--primary-hover-color);
 }
 
 .recommend-btn:disabled {
@@ -102,6 +102,7 @@ function recommend() {
   font-size: 1.1rem;
   position: relative;
   z-index: 1;
+  color: inherit;
 }
 
 .recommend-btn span {
@@ -110,7 +111,7 @@ function recommend() {
 }
 
 .count {
-  background: rgba(0, 0, 0, 0.08);
+  background: #ffe0d3;
   padding: 0.1rem 0.5rem;
   border-radius: 8px;
   font-size: 0.85rem;

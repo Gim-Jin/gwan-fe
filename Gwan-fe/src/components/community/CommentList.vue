@@ -44,7 +44,7 @@ const props = defineProps({
   display: flex;
   gap: 1rem;
   padding: 1rem 0;
-  border-bottom: 1px solid #ecf0f1;
+  border-bottom: 1px solid #ffe0d3;
   animation: fadeInUp 0.3s ease-out;
 }
 
@@ -67,7 +67,7 @@ const props = defineProps({
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #f0f2f5;
+  background: #ffe0d3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,7 +76,7 @@ const props = defineProps({
 
 .comment-avatar i {
   font-size: 1.2rem;
-  color: #95a5a6;
+  color: var(--primary-color);
 }
 
 .comment-body {
@@ -92,17 +92,17 @@ const props = defineProps({
 
 .comment-author {
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--primary-color);
   font-size: 0.95rem;
 }
 
 .comment-date {
   font-size: 0.85rem;
-  color: #95a5a6;
+  color: #ffab91;
 }
 
 .comment-content {
-  color: #34495e;
+  color: var(--text-color);
   line-height: 1.6;
   font-size: 0.95rem;
   white-space: pre-wrap;
@@ -112,12 +112,12 @@ const props = defineProps({
 .no-comments {
   text-align: center;
   padding: 3rem 1rem;
-  color: #95a5a6;
+  color: #b26a4c;
 }
 
 .no-comments i {
   font-size: 3rem;
-  color: #bdc3c7;
+  color: #ffd6c2;
   margin-bottom: 1rem;
   display: block;
 }
@@ -129,7 +129,7 @@ const props = defineProps({
 
 .no-comments .sub-text {
   font-size: 0.9rem;
-  color: #bdc3c7;
+  color: #ffab91;
 }
 
 /* 댓글 애니메이션 */
