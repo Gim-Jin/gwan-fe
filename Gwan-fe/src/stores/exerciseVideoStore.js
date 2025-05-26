@@ -1,6 +1,8 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios';
+import { addExerciseVideo, getAllTargets } from '@/api/exerciseVideo';
+import api from '@/api/axios';
 
 const REST_API_URL = 'http://localhost:8080/api/exercise-videos'
 
@@ -56,5 +58,14 @@ export const useExerciseVideoStore = defineStore('exerciseVideo', () => {
       });
   }
 
-  return { getRankedExerciseVideoList, getAllExerciseVideoList, exerciseVideoList, rankedVideoList, exerciseVideo, getVideoDetailInfo, searchExerciseVideos }
+  const deleteExerciseVideo = async (id) => {
+    await api.delete(`/api/exercise-videos/${id}`);
+  };
+
+  const editExerciseVideo = async (id, data) => {
+    // data: { title, description, url, youtubeId, targetId }
+    await api.put(`/api/exercise-videos/${id}`, data);
+  };
+
+  return { getRankedExerciseVideoList, getAllExerciseVideoList, exerciseVideoList, rankedVideoList, exerciseVideo, getVideoDetailInfo, searchExerciseVideos, deleteExerciseVideo, editExerciseVideo }
 })

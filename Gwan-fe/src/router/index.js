@@ -68,6 +68,34 @@ const router = createRouter({
       name: 'adminManagement',
       component: AdminManagement,
       meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/community',
+      name: 'community',
+      component: () => import('@/views/CommunityView.vue'),
+      redirect: { name: 'ArticleList' },
+      children: [
+        {
+          path: '',
+          name: 'ArticleList',
+          component: () => import('@/components/community/ArticleList.vue'),
+        },
+        {
+          path: 'write',
+          name: 'ArticleWrite',
+          component: () => import('@/components/community/ArticleForm.vue'),
+        },
+        {
+          path: ':id',
+          name: 'ArticleDetail',
+          component: () => import('@/components/community/ArticleDetail.vue'),
+        },
+        {
+          path: ':id/edit',
+          name: 'ArticleEdit',
+          component: () => import('@/components/community/ArticleForm.vue'),
+        },
+      ]
     }
   ],  
   scrollBehavior(to, from, savedPosition) {

@@ -2,10 +2,17 @@
   <div class="exercise-detail container my-5">
     <h2 class="mb-4 d-flex justify-content-between align-items-center">
       영상 상세보기
-      <button class="btn-like" @click="toggleLike" :aria-pressed="likeStore.isLiked.toString()">
-        <i :class="likeStore.isLiked ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'" class="like-icon"></i>
-      </button>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn-like" @click="toggleLike" :aria-pressed="likeStore.isLiked.toString()">
+          <i :class="likeStore.isLiked ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'" class="like-icon"></i>
+        </button>
+        <template v-if="isPrescriber">
+          <button class="btn btn-outline-warning btn-sm" @click="showEditModal = true">수정</button>
+          <button class="btn btn-outline-danger btn-sm" @click="handleDelete">삭제</button>
+        </template>
+      </div>
     </h2>
+    <ExerciseVideoEditModal v-if="showEditModal" @close="showEditModal = false" @refresh="refreshDetail" :video="exerciseVideoStore.exerciseVideo" />
 
     <div class="card shadow-sm p-4 rounded-4 border-0">
       <div class="text-center mb-4">
@@ -33,14 +40,19 @@ import { useExerciseVideoStore } from '@/stores/exerciseVideoStore';
 import { useLikeStore } from '@/stores/likeStore';
 
 import { useAuthStore } from '@/stores/auth';
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router';
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router';
+import ExerciseVideoEditModal from './ExerciseVideoEditModal.vue';
 
 const route = useRoute();
 const exerciseVideoStore = useExerciseVideoStore();
 const likeStore = useLikeStore();
 
 const authStore = useAuthStore();
+const router = useRouter();
+
+const showEditModal = ref(false);
+const isPrescriber = computed(() => authStore.user?.role === 'PRESCRIBER');
 
 onMounted(async () => {
   // 사용자 정보 초기화
@@ -74,6 +86,21 @@ const toggleLike = async () => {
       console.error('좋아요 처리 중 오류가 발생했습니다:', error);
     }
   }
+};
+
+const handleDelete = async () => {
+  if (!confirm('정말로 이 영상을 삭제하시겠습니까?')) return;
+  try {
+    await exerciseVideoStore.deleteExerciseVideo(exerciseVideoStore.exerciseVideo.exerciseVideoId);
+    alert('삭제되었습니다.');
+    await router.push('/exercises');
+  } catch (e) {
+    alert('삭제에 실패했습니다.');
+  }
+};
+
+const refreshDetail = async () => {
+  await exerciseVideoStore.getVideoDetailInfo(route.params.id);
 };
 </script>
 

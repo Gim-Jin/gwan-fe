@@ -39,15 +39,9 @@ const { formData } = surveyStore
 const router = useRouter()
 const isSubmitting = ref(false)
 
-// 컴포넌트 마운트 시 애니메이션 트리거
+
 onMounted(() => {
-  // 약간의 지연 후 애니메이션 시작
-  setTimeout(() => {
-    const progressBar = document.querySelector('.progress-bar-fill');
-    if (progressBar) {
-      progressBar.style.width = '100%';
-    }
-  }, 100);
+
 });
 
 const submitSurvey = async () => {

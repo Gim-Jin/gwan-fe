@@ -19,8 +19,4 @@ const calendarOptions = computed(() => ({
 </script>
 
 <style>
-.fc-daygrid-day-number {
-  text-decoration: none !important; /* 밑줄 제거 */
-  color: #fa8a65 !important;        /* 원하는 색상으로 변경 */
-}
 </style>
