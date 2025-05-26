@@ -117,15 +117,15 @@ function goList() {
 }
 
 .form-card {
-  background: white;
+  background: var(--secondary-color);
   border-radius: 16px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 20px rgba(255, 138, 101, 0.08);
   overflow: hidden;
 }
 
 .form-header {
-  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover-color) 100%);
+  color: var(--secondary-color);
   padding: 2rem;
 }
 
@@ -154,7 +154,7 @@ function goList() {
 .form-label {
   display: block;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--primary-color);
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
 }
@@ -163,26 +163,26 @@ function goList() {
 .form-textarea {
   width: 100%;
   padding: 0.8rem 1rem;
-  border: 2px solid #e9ecef;
+  border: 2px solid #ffe0d3;
   border-radius: 8px;
   font-size: 1rem;
-  color: #2c3e50;
+  color: var(--text-color);
   transition: all 0.3s ease;
-  background: #f8f9fa;
+  background: #fff7f0;
 }
 
 .form-input:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #3498db;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  border-color: var(--primary-color);
+  background: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.08);
 }
 
 .form-input:disabled,
 .form-textarea:disabled {
-  background: #e9ecef;
-  color: #6c757d;
+  background: #ffe0d3;
+  color: #b26a4c;
   cursor: not-allowed;
 }
 
@@ -197,7 +197,7 @@ function goList() {
   right: 1rem;
   top: 2.3rem;
   font-size: 0.8rem;
-  color: #95a5a6;
+  color: #ffab91;
 }
 
 .form-actions {
@@ -205,7 +205,7 @@ function goList() {
   gap: 1rem;
   justify-content: flex-end;
   padding-top: 1rem;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid #ffe0d3;
 }
 
 .btn {
@@ -226,14 +226,14 @@ function goList() {
 }
 
 .btn-primary {
-  background: #3498db;
-  color: white;
+  background: var(--primary-color);
+  color: var(--secondary-color);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2980b9;
+  background: var(--primary-hover-color);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 138, 101, 0.18);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -241,20 +241,20 @@ function goList() {
 }
 
 .btn-primary:disabled {
-  background: #bdc3c7;
+  background: #ffd6c2;
   cursor: not-allowed;
   opacity: 0.7;
 }
 
 .btn-secondary {
-  background: #ecf0f1;
-  color: #34495e;
+  background: #ffe0d3;
+  color: var(--primary-color);
 }
 
 .btn-secondary:hover {
-  background: #bdc3c7;
+  background: #ffd6c2;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(255, 138, 101, 0.08);
 }
 
 .btn-secondary:active {

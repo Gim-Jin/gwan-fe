@@ -77,9 +77,9 @@ const article = ref(dummyArticles.find(a => a.article_id === Number(route.params
 }
 
 .article-card {
-  background: #fff;
+  background: var(--secondary-color);
   border-radius: 16px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 20px rgba(255, 138, 101, 0.08);
   padding: 2.5rem;
   margin-bottom: 2rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -87,19 +87,19 @@ const article = ref(dummyArticles.find(a => a.article_id === Number(route.params
 
 .article-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 30px rgba(255, 138, 101, 0.13);
 }
 
 .article-header {
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--primary-color);
 }
 
 .article-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--primary-color);
   margin: 0 0 1rem 0;
   line-height: 1.4;
 }
@@ -114,19 +114,19 @@ const article = ref(dummyArticles.find(a => a.article_id === Number(route.params
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #7f8c8d;
+  color: #b26a4c;
   font-size: 0.95rem;
 }
 
 .meta-item i {
   font-size: 1.1rem;
-  color: #95a5a6;
+  color: #ffab91;
 }
 
 .article-content {
   font-size: 1.1rem;
   line-height: 1.8;
-  color: #34495e;
+  color: var(--text-color);
   margin-bottom: 2rem;
   white-space: pre-line;
 }
@@ -135,13 +135,13 @@ const article = ref(dummyArticles.find(a => a.article_id === Number(route.params
   display: flex;
   gap: 1rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid #ffe0d3;
 }
 
 .comments-section {
-  background: #fff;
+  background: var(--secondary-color);
   border-radius: 16px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 20px rgba(255, 138, 101, 0.08);
   padding: 2rem;
   animation: slideUp 0.4s ease-out 0.1s both;
 }
@@ -160,7 +160,7 @@ const article = ref(dummyArticles.find(a => a.article_id === Number(route.params
 .comments-title {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--primary-color);
   margin: 0 0 1.5rem 0;
   display: flex;
   align-items: center;
@@ -168,18 +168,18 @@ const article = ref(dummyArticles.find(a => a.article_id === Number(route.params
 }
 
 .comments-title i {
-  color: #3498db;
+  color: var(--primary-color);
 }
 
 .not-found {
   text-align: center;
   padding: 4rem 2rem;
-  color: #7f8c8d;
+  color: #b26a4c;
 }
 
 .not-found i {
   font-size: 4rem;
-  color: #bdc3c7;
+  color: #ffd6c2;
   margin-bottom: 1rem;
   display: block;
 }

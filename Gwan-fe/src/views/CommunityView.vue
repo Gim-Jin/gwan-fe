@@ -17,7 +17,7 @@
 <style scoped>
 .community-wrapper {
   min-height: calc(100vh - 60px); /* 헤더 높이 제외 */
-  background: #f5f7fa;
+  background: #F5E6DE;
   padding-top: 60px; /* 헤더 아래 여백 */
 }
 

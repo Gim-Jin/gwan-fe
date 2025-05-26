@@ -94,7 +94,7 @@ async function submitComment() {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #e3f2fd;
+  background: #ffe0d3;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,20 +103,20 @@ async function submitComment() {
 
 .avatar-placeholder i {
   font-size: 1.5rem;
-  color: #3498db;
+  color: var(--primary-color);
 }
 
 .input-wrapper {
   flex: 1;
-  background: #f8f9fa;
+  background: #fff7f0;
   border-radius: 12px;
   padding: 1rem;
   transition: all 0.3s ease;
 }
 
 .input-wrapper:focus-within {
-  background: white;
-  box-shadow: 0 0 0 2px #3498db;
+  background: var(--secondary-color);
+  box-shadow: 0 0 0 2px var(--primary-color);
 }
 
 textarea {
@@ -126,7 +126,7 @@ textarea {
   resize: none;
   font-size: 1rem;
   line-height: 1.5;
-  color: #2c3e50;
+  color: var(--text-color);
   outline: none;
   min-height: 24px;
   max-height: 120px;
@@ -134,12 +134,12 @@ textarea {
 }
 
 textarea::placeholder {
-  color: #95a5a6;
+  color: #ffab91;
 }
 
 textarea:disabled {
   cursor: not-allowed;
-  color: #bdc3c7;
+  color: #ffd6c2;
 }
 
 .form-actions {
@@ -158,25 +158,26 @@ textarea:disabled {
 
 .hint {
   font-size: 0.8rem;
-  color: #7f8c8d;
+  color: #b26a4c;
   display: flex;
   align-items: center;
   gap: 0.3rem;
 }
 
 .hint kbd {
-  background: white;
-  border: 1px solid #ddd;
+  background: var(--secondary-color);
+  border: 1px solid #ffd6c2;
+  color:#b26a4c;
   border-radius: 4px;
   padding: 2px 6px;
   font-size: 0.75rem;
   font-family: monospace;
-  box-shadow: 0 2px 0 #ddd;
+  box-shadow: 0 2px 0 #ffd6c2;
 }
 
 .submit-btn {
-  background: #3498db;
-  color: white;
+  background: var(--primary-color);
+  color: var(--secondary-color);
   border: none;
   border-radius: 8px;
   padding: 0.5rem 1rem;
@@ -190,9 +191,9 @@ textarea:disabled {
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: #2980b9;
+  background: var(--primary-hover-color);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 138, 101, 0.13);
 }
 
 .submit-btn:active:not(:disabled) {
@@ -200,7 +201,7 @@ textarea:disabled {
 }
 
 .submit-btn:disabled {
-  background: #bdc3c7;
+  background: #ffd6c2;
   cursor: not-allowed;
   opacity: 0.6;
 }
