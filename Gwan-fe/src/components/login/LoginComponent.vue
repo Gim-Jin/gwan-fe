@@ -78,10 +78,13 @@ const handleLogin = async () => {
   
   try {
     const result = await authStore.loginUser(form)
+    console.log('로그인 성공, 결과:', result)
     
     // 리다이렉션 처리
-    const redirectPath = router.currentRoute.value.query.redirect || { name: 'home' }
-    router.push(redirectPath)
+    const redirectPath = router.currentRoute.value.query.redirect || '/'
+    
+    // 페이지 새로고침으로 헤더 업데이트 보장
+    window.location.href = redirectPath
   } catch (err) {
     errorMsg.value = err.response?.data?.message || '로그인에 실패했습니다. 아이디와 비밀번호를 확인해 주세요.'
   } finally {
