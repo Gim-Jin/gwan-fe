@@ -16,7 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
   // 사용자 정보 조회
   const fetchUserInfo = async () => {
     try {
-      const response = await api.get('/api/user/mypage')
+      const response = await api.get('/api/auth/me')
       
       // 다양한 응답 구조에 대응
       if (response.data) {
@@ -47,7 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
         return false
       }
     } catch (err) {
-      console.error('사용자 정보 조회 실패:', err.response?.status)
+      console.error('사용자 정보 조회 실패:', err.response?.status, err.response?.data)
       accessToken.value = false
       user.value = null
       return false
@@ -61,33 +61,29 @@ export const useAuthStore = defineStore('auth', () => {
     
     try {
       const response = await login(credentials)
+      console.log('로그인 응답:', response.data)
       
-      // 로그인 응답에서 바로 역할 정보가 있는지 확인
-      if (response.data && response.data.data) {
-        // 로그인 응답에서 바로 역할을 설정
-        let role = 'GENERAL'
-        if (typeof response.data.data === 'string') {
-          // "ADMIN 로그인 성공" 같은 문자열에서 역할 추출
-          const roleMatch = response.data.data.match(/(ADMIN|ADVISOR|GENERAL)/i)
-          if (roleMatch) {
-            role = roleMatch[1].toUpperCase()
-          }
-        } else if (response.data.data.role) {
-          role = response.data.data.role.toUpperCase()
-        }
+      // 로그인 응답에서 역할 정보 추출
+      // 응답 형태: {"success":true,"code":200,"message":"요청 성공","data":"GENERAL"}
+      if (response.data && response.data.success && response.data.data) {
+        const role = response.data.data // "GENERAL", "ADMIN", "ADVISOR" 등
         
         user.value = {
-          role: role
+          role: role.toUpperCase()
         }
         accessToken.value = true
+        localStorage.setItem('userRole', role.toUpperCase())
+        
+        console.log('로그인 성공, 사용자 역할:', role)
+        
+        return response
+      } else {
+        // 로그인은 성공했지만 역할 정보가 없는 경우
+        console.log('로그인 응답에 역할 정보가 없음, 사용자 정보 조회 시도')
+        await fetchUserInfo()
         
         return response
       }
-      
-      // 로그인 응답에 역할이 없으면 별도 조회
-      await fetchUserInfo()
-      
-      return response
     } catch (err) {
       error.value = err.response?.data?.message || '로그인에 실패했습니다'
       throw err
@@ -105,6 +101,7 @@ export const useAuthStore = defineStore('auth', () => {
       // API 호출 성공/실패와 관계없이 클라이언트 상태 초기화
       accessToken.value = false
       user.value = null
+      localStorage.removeItem('userRole')
     }
   }
 
@@ -119,33 +116,42 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // 초기화 함수 - 사용자 정보 조회를 통한 인증 상태 확인
- const initialize = async () => {
-  const currentPath = window.location.pathname
+  const initialize = async () => {
+    const currentPath = window.location.pathname
 
-  if (currentPath === '/login' || currentPath === '/signup') {
-    accessToken.value = false
-    user.value = null
-    localStorage.removeItem('userRole')
-    return
-  }
-
-  try {
-    // 토큰 유효성 검사 및 role 확인
-    const response = await api.get('/api/auth/me')
-    if (response.data && response.data.success) {
-      const role = response.data.data || 'GENERAL'
-      user.value = { role: role.toUpperCase() }
-      accessToken.value = true
-      localStorage.setItem('userRole', role.toUpperCase())
-      console.log('사용자 정보 초기화 성공:', user.value)
+    if (currentPath === '/login' || currentPath === '/signup') {
+      accessToken.value = false
+      user.value = null
+      localStorage.removeItem('userRole')
       return
     }
-  } catch (error) {
-    accessToken.value = false
-    user.value = null
-    localStorage.removeItem('userRole')
+
+    try {
+      console.log('토큰 유효성 검사 시작...')
+      // 토큰 유효성 검사 및 role 확인
+      const response = await api.get('/api/auth/me')
+      console.log('토큰 유효성 검사 응답:', response.data)
+      
+      if (response.data && response.data.success) {
+        const role = response.data.data || 'GENERAL'
+        user.value = { role: role.toUpperCase() }
+        accessToken.value = true
+        localStorage.setItem('userRole', role.toUpperCase())
+        console.log('사용자 정보 초기화 성공:', user.value)
+        return
+      } else {
+        console.log('토큰 유효성 검사 실패: success가 false')
+        accessToken.value = false
+        user.value = null
+        localStorage.removeItem('userRole')
+      }
+    } catch (error) {
+      console.error('토큰 유효성 검사 에러:', error.response?.status, error.response?.data)
+      accessToken.value = false
+      user.value = null
+      localStorage.removeItem('userRole')
+    }
   }
-}
 
   return {
     accessToken,

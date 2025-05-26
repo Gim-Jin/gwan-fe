@@ -55,7 +55,7 @@ instance.interceptors.response.use(
         if (error.response?.status === 401 && !originalRequest._retry) {
             
             // 토큰 재발급과 로그인 관련 요청은 제외
-            const excludeUrls = ['/api/auth/login', '/api/auth/signup', '/api/auth/reissue', '/api/auth/logout'];
+            const excludeUrls = ['/api/auth/login', '/api/auth/signup', '/api/auth/reissue', '/api/auth/logout', '/api/auth/me'];
             const shouldExclude = excludeUrls.some(url => originalRequest.url.includes(url));
             
             if (shouldExclude) {
