@@ -1,8 +1,8 @@
 <template>
   <section class="bg-light">  
   <div class="container py-5">
-    <h1 class="fw-bold fs-1 mb-4 text-center">HOT 카테고리</h1>
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+    <h1 class="fw-bold fs-1 mb-4 text-center">카테고리</h1>
+    <div class="row row-cols-7 row-cols-md-7 row-cols-lg-7 g-4">
       <div class="col" v-for="target in targetStore.popularTargetList" :key="target.targetId">
         <CategoryCard :target="target" @click="goToTargetVideos(target)" style="cursor:pointer;" />
       </div>
