@@ -10,15 +10,7 @@
     </div>
     
     <div class="survey-content">
-      <div class="progress-bar-container progress-75">
-        <div class="progress-bar">
-          <div class="progress-bar-fill"></div>
-        </div>
-        <div class="progress-info">
-          <span>단계 3/4</span>
-          <span>75%</span>
-        </div>
-      </div>
+
       
       <div class="survey-card">
         <p class="step-indicator">생활 습관</p>
@@ -47,13 +39,7 @@ const {formData} = useSurveyStore();
 
 // 컴포넌트 마운트 시 애니메이션 트리거
 onMounted(() => {
-  // 약간의 지연 후 애니메이션 시작
-  setTimeout(() => {
-    const progressBar = document.querySelector('.progress-bar-fill');
-    if (progressBar) {
-      progressBar.style.width = '75%';
-    }
-  }, 100);
+
 });
 </script>
 

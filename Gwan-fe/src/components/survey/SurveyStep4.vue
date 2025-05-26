@@ -10,16 +10,7 @@
     </div>
     
     <div class="survey-content">
-      <div class="progress-bar-container progress-100">
-        <div class="progress-bar">
-          <div class="progress-bar-fill"></div>
-        </div>
-        <div class="progress-info">
-          <span>단계 4/4</span>
-          <span>100%</span>
-        </div>
-      </div>
-      
+
       <div class="survey-card">
         <p class="step-indicator">의료 정보</p>
         <h2 class="title">질환 및 수술 이력이 있으신가요?</h2>

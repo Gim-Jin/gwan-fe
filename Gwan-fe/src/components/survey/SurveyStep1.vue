@@ -10,15 +10,7 @@
     </div>
     
     <div class="survey-content">
-      <div class="progress-bar-container progress-25">
-        <div class="progress-bar">
-          <div class="progress-bar-fill"></div>
-        </div>
-        <div class="progress-info">
-          <span>단계 1/4</span>
-          <span>25%</span>
-        </div>
-      </div>
+ 
       
       <div class="survey-card">
         <p class="step-indicator">통증 정보</p>
@@ -27,7 +19,7 @@
         <form class="form">
           <select v-model="formData.painArea">
             <option disabled value="">통증 부위를 선택해주세요</option>
-            <option value="NECK" selected>목</option>
+            <option value="NECK">목</option>
             <option value="SHOULDER">어깨</option>
             <option value="BACK">등</option>
             <option value="KNEE">무릎</option>
@@ -60,15 +52,9 @@ import { onMounted } from 'vue'
 
 const {formData} = useSurveyStore();
 
-// 컴포넌트 마운트 시 애니메이션 트리거
+
 onMounted(() => {
-  // 약간의 지연 후 애니메이션 시작
-  setTimeout(() => {
-    const progressBar = document.querySelector('.progress-bar-fill');
-    if (progressBar) {
-      progressBar.style.width = '25%';
-    }
-  }, 100);
+
 });
 </script>
 

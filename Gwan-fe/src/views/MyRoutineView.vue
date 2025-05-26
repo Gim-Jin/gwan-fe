@@ -1,7 +1,7 @@
 <template>
   <section class="my-routine">
     <div class="container-fluid">
-      <div class="routine-header">
+      <div class="routine-header mt-4">
         <h1 class="routine-title">나의 루틴</h1>
       </div>
 
@@ -31,26 +31,32 @@
       </div>
     </div>
 
-    <!-- 설문 모달 -->
-    <div v-if="showSurvey" class="survey-modal">
-      <div class="survey-backdrop" @click="closeSurvey"></div>
-      <div class="survey-content">
-        <SurveyStep1 v-if="surveyStep === 1" @next="goNextStep" />
-        <SurveyStep2 v-if="surveyStep === 2" @prev="goPrevStep" @next="goNextStep" />
-        <SurveyStep3 v-if="surveyStep === 3" @prev="goPrevStep" @next="goNextStep" />
-        <SurveyStep4 v-if="surveyStep === 4" @prev="goPrevStep" @next="finishSurvey" />
+  <!-- 설문 모달 -->
+  <div v-if="showSurvey" class="survey-modal">
+    <div class="survey-backdrop" @click="closeSurvey"></div>
 
+    <!-- appear 속성을 주어 첫 진입 시에도 애니메이션 적용 -->
+    <transition name="pop" appear>
+      <!-- v-show를 써야 leave-animation 도 정상 작동 -->
+      <div v-show="showSurvey" class="survey-content">
+        
+        <transition name="step" mode="out-in">
+          <component :is="currentStepComp" :key="surveyStep"
+                    @next="goNextStep" @prev="goPrevStep" />
+        </transition>
+        <ProgressBar :current-step="surveyStep" :total-steps="4" />
         <button class="close-btn" @click="closeSurvey">
           <i class="bi bi-x-lg"></i>
         </button>
-
       </div>
-    </div>
+    </transition>
+  </div>
+
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import noExerciseImg from '@/assets/no-exercise.png'
 import SurveyStep1 from '@/components/survey/SurveyStep1.vue'
 import SurveyStep2 from '@/components/survey/SurveyStep2.vue'
@@ -58,6 +64,11 @@ import SurveyStep3 from '@/components/survey/SurveyStep3.vue'
 import SurveyStep4 from '@/components/survey/SurveyStep4.vue'
 import ExerciseCalendar from '@/components/calendar/ExerciseCalendar.vue'
 import { useSurveyStore } from '@/stores/userSurveyStore'
+import ProgressBar from '@/components/survey/ProgressBar.vue'
+
+
+
+
 
 const showSurvey = ref(false)
 const surveyStep = ref(1)
@@ -65,6 +76,8 @@ const selectedExercise = ref(null)
 const surveyStore = useSurveyStore()
 const weeklyRoutine = ref([])
 const errorMsg = ref('')
+const comps = [SurveyStep1, SurveyStep2, SurveyStep3, SurveyStep4]
+const currentStepComp = computed(() => comps[surveyStep.value - 1])
 
 const goNextStep = () => {
   if (surveyStep.value < 4) surveyStep.value++
@@ -281,4 +294,46 @@ const generateWeeklyRoutineFromPrograms = (programs) => {
   background-color: #f5f5f5;
   color: #333;
 }
+/* ---------- backdrop 페이드 ---------- */
+.survey-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  /* 투명한 상태로 시작해 트랜지션 */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.survey-modal .survey-backdrop {
+  /* 모달이 나타날 때 바로 불투명해짐 */
+  opacity: 1;
+}
+
+/* ---------- 팝업 콘텐츠 ---------- */
+.pop-enter-from,
+.pop-leave-to {
+  transform: translateY(40px) scale(0.9);
+  opacity: 0;
+}
+.pop-enter-active,
+.pop-leave-active {
+  transition: all 300ms cubic-bezier(0.25,0.8,0.5,1);
+}
+.pop-enter-to,
+.pop-leave-from {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* step-fade-slide */
+.step-enter-from,
+.step-leave-to   { opacity: 0; transform: translateX(40px); }
+.step-enter-to,
+.step-leave-from { opacity: 1; transform: translateX(0); }
+
+.step-enter-active,
+.step-leave-active {
+  transition: all 350ms cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+
+
 </style>
