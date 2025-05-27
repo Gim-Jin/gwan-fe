@@ -8,7 +8,7 @@
       <p class="card-text text-muted mb-3" style="font-size: 0.98rem;">{{ user.email }}</p>
       <div class="d-flex justify-content-center mb-3 gap-4">
         <div>
-          <span class="fw-bold text-primary" style="font-size: 1.3rem;">{{ user.videoCnt }}</span>
+          <span class="fw-bold text-primary" style="font-size: 1.3rem;">{{ totalLikesCount }}</span>
           <div class="small text-secondary">좋아요</div>
         </div>
         <div>
@@ -26,9 +26,11 @@ import { defineProps, computed, onMounted, ref } from 'vue'
 import ProfileAvatar from '@/components/common/ProfileAvatar.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useCommentStore } from '@/stores/commentStore'
+import api from '@/api/axios'
 
 const authStore = useAuthStore()
 const commentStore = useCommentStore()
+
 
 const props = defineProps({
   user: {
@@ -40,10 +42,30 @@ const props = defineProps({
 // 게시글 댓글 수
 const articleCommentsCount = ref(0)
 
+// 좋아요 누른 게시글 수
+const likedArticlesCount = ref(0)
+
+// 좋아요 누른 게시글 수 로드
+const loadLikedArticlesCount = async () => {
+  try {
+    const response = await api.get('/api/recommand', { withCredentials: true })
+    likedArticlesCount.value = response.data.data?.length || 0
+  } catch (error) {
+    console.error('좋아요 게시글 수 로드 실패:', error)
+    likedArticlesCount.value = 0
+  }
+}
+
 // 총 댓글 수 계산 (비디오 댓글 + 게시글 댓글)
 const totalCommentsCount = computed(() => {
   const videoComments = props.user.commentCnt || 0
   return videoComments + articleCommentsCount.value
+})
+
+// 총 좋아요 수 계산 (비디오 + 게시글)
+const totalLikesCount = computed(() => {
+  const videoLikes = props.user.videoCnt || 0
+  return videoLikes;
 })
 
 // 게시글 댓글 수 로드
@@ -59,6 +81,7 @@ const loadArticleCommentsCount = async () => {
 
 onMounted(() => {
   loadArticleCommentsCount()
+  loadLikedArticlesCount()
 })
 
 // 사용자 타입을 결정하는 함수

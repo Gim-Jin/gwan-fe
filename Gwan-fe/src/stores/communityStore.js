@@ -8,7 +8,10 @@ import {
   deleteArticle,
   createComment,
   updateComment,
-  deleteComment
+  deleteComment,
+  addRecommend,
+  removeRecommend,
+  isRecommended
 } from '@/api/community'
 
 export const useCommunityStore = defineStore('community', () => {
@@ -225,7 +228,26 @@ export const useCommunityStore = defineStore('community', () => {
     }
   }
 
+  // 추천 추가
+  const toggleRecommend = async (articleId, isRecommended) => {
+    if (isRecommended) {
+      await removeRecommend(articleId)
+    } else {
+      await addRecommend(articleId)
+    }
+    await fetchArticle(articleId)
+  }
 
+  // 추천 개수 가져오기 (게시글 목록에서 가져오기)
+  const fetchRecommendCount = async (articleId) => {
+    try {
+      const articles = await getArticles()
+      const article = articles.find(a => (a.articleId === articleId || a.id === articleId))
+      return article?.recommentCount || 0
+    } catch {
+      return 0
+    }
+  }
 
   // 상태 초기화
   const resetState = () => {
@@ -253,6 +275,8 @@ export const useCommunityStore = defineStore('community', () => {
     addComment,
     editComment,
     removeComment,
+    toggleRecommend,
+    fetchRecommendCount,
     resetState
   }
 }) 

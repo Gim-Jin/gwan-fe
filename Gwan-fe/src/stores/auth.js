@@ -18,37 +18,49 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       console.log('fetchUserInfo 시작...')
       
-      // 먼저 /api/auth/me로 역할 정보 조회 (스크린샷에서 확인된 엔드포인트)
+      // 먼저 /api/auth/me로 역할 정보 조회
       const response = await api.get('/api/auth/me')
       console.log('auth/me 응답:', response.data)
       
       if (response.data && response.data.success) {
         let role = 'GENERAL' // 기본값
-        let userId = null
-        let nickname = null
         
         // 케이스 1: { success: true, data: "GENERAL" } - 스크린샷에서 확인된 구조
         if (response.data.data && typeof response.data.data === 'string') {
           role = response.data.data
           console.log('역할 추출 성공:', role)
         }
-        // 케이스 2: { userRole: "ADMIN", userId: 1, nickname: "test" } 구조
-        else if (response.data.userRole) {
-          role = response.data.userRole
-          userId = response.data.userId
-          nickname = response.data.nickname
-          console.log('상세 정보 추출:', { role, userId, nickname })
-        }
         
-        user.value = {
-          id: userId,
-          nickname: nickname,
-          role: role.toUpperCase()
+        // /api/user로 상세 정보 조회
+        try {
+          const userResponse = await api.get('/api/user')
+          console.log('user 응답:', userResponse.data)
+          
+          if (userResponse.data && userResponse.data.success && userResponse.data.data) {
+            const userData = userResponse.data.data
+            user.value = {
+              id: userData.userId,
+              nickname: userData.nickName || userData.nickname,
+              email: userData.email,
+              loginId: userData.loginId,
+              name: userData.name,
+              role: role.toUpperCase()
+            }
+            console.log('사용자 정보 설정 완료:', user.value)
+            accessToken.value = true
+            return true
+          }
+        } catch (userErr) {
+          console.error('/api/user 조회 실패:', userErr)
+          // 기본 정보만 설정
+          user.value = {
+            id: null,
+            nickname: null,
+            role: role.toUpperCase()
+          }
+          accessToken.value = true
+          return true
         }
-        
-        console.log('사용자 정보 설정 완료:', user.value)
-        accessToken.value = true
-        return true
       }
       
       // 응답이 성공적이지 않은 경우

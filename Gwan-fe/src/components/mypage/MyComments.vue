@@ -202,15 +202,20 @@ const removeVideoComment = async (commentId) => {
 // 게시글 댓글 이벤트 핸들러
 const handleReviewUpdate = async (data) => {
   try {
-    // TODO: 게시글 댓글 수정 API 호출
-    console.log('게시글 댓글 수정:', data.reviewId, data.content);
+    const review = articleComments.value.find(r => (r.reviewId || r.id) === data.reviewId)
+    if (!review) return alert('리뷰 정보를 찾을 수 없습니다.')
+    
+    await communityStore.editComment(review.articleId, data.reviewId, {
+      content: data.content
+    })
+    
     // 수정 후 목록 새로고침
-    await loadArticleComments();
+    await loadArticleComments()
   } catch (error) {
-    console.error('게시글 댓글 수정 실패:', error);
-    alert('댓글 수정에 실패했습니다.');
+    console.error('게시글 댓글 수정 실패:', error)
+    alert('댓글 수정에 실패했습니다.')
   }
-};
+}
 
 const handleReviewDelete = async (reviewId) => {
   try {

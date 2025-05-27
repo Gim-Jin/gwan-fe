@@ -38,6 +38,24 @@ export const deleteArticle = async (articleId) => {
   return response.data;
 };
 
+// 게시글 추천(좋아요) 추가
+export const addRecommend = async (articleId) => {
+  const response = await api.post('/api/recommand', { articleId })
+  return response.data.data
+}
+
+// 게시글 추천(좋아요) 취소
+export const removeRecommend = async (articleId) => {
+  const response = await api.delete(`/api/recommand/${articleId}`)
+  return response.data.data
+}
+
+// 내가 추천했는지 확인
+export const isRecommended = async (articleId) => {
+  const response = await api.get(`/api/recommand/${articleId}`)
+  return response.data.data
+}
+
 // ========== REVIEW CONTROLLER ==========
 
 // 댓글 수정
