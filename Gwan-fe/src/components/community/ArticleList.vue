@@ -62,7 +62,7 @@
         <div class="article-stats">
           <div class="stat-item">
             <i class="bi bi-chat-dots"></i>
-            <span>{{ article.reviews?.length || 0 }}</span>
+            <span>{{ article.reviewCount || 0 }}</span>
           </div>
         </div>
       </article>
