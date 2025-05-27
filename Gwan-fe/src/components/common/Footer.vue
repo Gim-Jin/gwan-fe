@@ -14,7 +14,7 @@
         <ul>
           <li><RouterLink :to="{ name: 'home' }">홈</RouterLink></li>
           <li><RouterLink :to="{ name: 'exercises' }">운동 영상</RouterLink></li>
-          <li><a href="/board">커뮤니티</a></li>
+          <li><RouterLink :to="{ name: 'article' }">커뮤니티</RouterLink></li>
           <li><a href="#">자주 묻는 질문</a></li>
           <li><a href="#">개인정보처리방침</a></li>
         </ul>

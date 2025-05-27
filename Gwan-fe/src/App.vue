@@ -9,6 +9,7 @@
             <!-- 로그인 상태에 따라 헤더 렌더링 -->
             <HeaderNav v-if="!authStore.isAuthenticated" />
             <HeaderAdminNav v-else-if="currentUserRole === 'ADMIN'" />
+            <HeaderLoginedNav v-else-if="currentUserRole === 'GENERAL' || currentUserRole === 'PRESCRIBER'" />
             <HeaderLoginedNav v-else />
      
             <main class="main-content">
@@ -39,17 +40,23 @@ const isInitializing = ref(true)
 const isDevelopment = import.meta.env.DEV
 
 // 현재 사용자 역할을 computed로 관리
-const currentUserRole = computed(() => authStore.user?.role)
+const currentUserRole = computed(() => {
+    const role = authStore.user?.role
+    console.log('App.vue - currentUserRole computed:', role)
+    return role
+})
 
 // 인증 상태 변경 감지
 watch(() => authStore.isAuthenticated, (newValue) => {
-    console.log('인증 상태 변경 감지:', newValue)
-    console.log('현재 사용자 정보:', authStore.user)
+    console.log('App.vue - 인증 상태 변경 감지:', newValue)
+    console.log('App.vue - 현재 사용자 정보:', authStore.user)
+    console.log('App.vue - 현재 사용자 역할:', currentUserRole.value)
 })
 
 // 사용자 정보 변경 감지
 watch(() => authStore.user, (newValue) => {
-    console.log('사용자 정보 변경 감지:', newValue)
+    console.log('App.vue - 사용자 정보 변경 감지:', newValue)
+    console.log('App.vue - 계산된 역할:', currentUserRole.value)
 }, { deep: true })
 
 onMounted(async () => {

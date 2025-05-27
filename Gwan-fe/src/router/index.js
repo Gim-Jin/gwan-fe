@@ -70,8 +70,8 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true }
     },
     {
-      path: '/community',
-      name: 'community',
+      path: '/article',
+      name: 'article',
       component: () => import('@/views/CommunityView.vue'),
       redirect: { name: 'ArticleList' },
       children: [
@@ -84,6 +84,7 @@ const router = createRouter({
           path: 'write',
           name: 'ArticleWrite',
           component: () => import('@/components/community/ArticleForm.vue'),
+          meta: { requiresAuth: true }
         },
         {
           path: ':id',
@@ -94,6 +95,7 @@ const router = createRouter({
           path: ':id/edit',
           name: 'ArticleEdit',
           component: () => import('@/components/community/ArticleForm.vue'),
+          meta: { requiresAuth: true }
         },
       ]
     }

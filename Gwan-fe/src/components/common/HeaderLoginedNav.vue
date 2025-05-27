@@ -5,7 +5,7 @@
       <nav class="nav-menu">
         <RouterLink :to="{name : 'home'}"><i class="bi bi-house text-primary icon-large"></i> 홈</RouterLink>
         <RouterLink :to="{name : 'exercises'}"><i class="bi bi-lightning-charge text-danger icon-large"></i> 운동</RouterLink>
-        <RouterLink :to="{name : 'community'}"><i class="bi bi-people text-success icon-large"></i> 커뮤니티</RouterLink>
+        <RouterLink :to="{name : 'article'}"><i class="bi bi-people text-success icon-large"></i> 커뮤니티</RouterLink>
         <RouterLink :to="{name : 'myRoutine'}"><i class="bi bi-trophy text-warning icon-large"></i> 나의 루틴</RouterLink>
       </nav>
     </div>
@@ -20,7 +20,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { onMounted } from 'vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -34,13 +33,7 @@ async function handleLogout() {
   }
 }
 
-onMounted(async () => {
-  try {
-    await authStore.initialize()
-  } catch (error) {
-    console.error('인증 초기화 실패:', error)
-  }
-})
+// onMounted에서 초기화 제거 - App.vue에서 이미 처리함
 </script>
 
 <style scoped>

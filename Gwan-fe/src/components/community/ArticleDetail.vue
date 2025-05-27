@@ -1,29 +1,47 @@
 <template>
-  <div v-if="article" class="article-detail-container">
+  <!-- 로딩 상태 -->
+  <div v-if="loading" class="loading-container">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">불러오는 중...</span>
+    </div>
+    <p class="mt-2">게시글을 불러오는 중...</p>
+  </div>
+
+  <!-- 에러 상태 -->
+  <div v-else-if="error" class="error-container">
+    <div class="alert alert-danger">
+      <i class="bi bi-exclamation-triangle"></i>
+      {{ error }}
+      <button @click="communityStore.fetchArticle(Number(route.params.id))" class="btn btn-outline-danger btn-sm ms-2">
+        다시 시도
+      </button>
+    </div>
+  </div>
+
+  <!-- 게시글 상세 -->
+  <div v-else-if="article" class="article-detail-container">
     <div class="article-card">
       <div class="article-header">
         <h1 class="article-title">{{ article.title }}</h1>
         <div class="article-meta">
           <div class="meta-item">
             <i class="bi bi-person-circle"></i>
-            <span>로그인 유저</span>
+            <span>{{ article.userName || '익명' }}</span>
           </div>
           <div class="meta-item">
             <i class="bi bi-clock"></i>
-            <span>{{ article.created_at }}</span>
+            <span>{{ formatDate(article.createTime || article.createAt || article.createdAt || article.created_at) }}</span>
           </div>
           <div class="meta-item">
             <i class="bi bi-chat-dots"></i>
-            <span>{{ article.comments.length }}개의 댓글</span>
+            <span>{{ article.reviews?.length || 0 }}개의 댓글</span>
           </div>
         </div>
       </div>
       
       <div class="article-content">{{ article.content }}</div>
       
-      <div class="article-actions">
-        <RecommendButton :article="article" :isAuthenticated="isAuthenticatedValue" />
-      </div>
+
     </div>
 
     <div class="comments-section">
@@ -31,7 +49,7 @@
         <i class="bi bi-chat-square-text"></i>
         댓글
       </h3>
-      <CommentList :comments="article.comments" :isAuthenticated="isAuthenticatedValue" :article="article" />
+      <CommentList :reviews="article.reviews || []" :isAuthenticated="isAuthenticatedValue" :article="article" />
       <CommentForm :article="article" :isAuthenticated="isAuthenticatedValue" />
     </div>
   </div>
@@ -42,19 +60,88 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { dummyArticles } from '@/stores/communityDummy'
+import { useCommunityStore } from '@/stores/communityStore'
 import { useAuthStore } from '@/stores/auth'
-import RecommendButton from './RecommendButton.vue'
-import CommentList from './CommentList.vue'
-import CommentForm from './CommentForm.vue'
+
+import CommentList from './ReviewList.vue'
+import CommentForm from './ReviewForm.vue'
 
 const route = useRoute()
 const authStore = useAuthStore()
-// computed를 값으로 변환
+const communityStore = useCommunityStore()
+
 const isAuthenticatedValue = computed(() => authStore.isAuthenticated)
-const article = ref(dummyArticles.find(a => a.article_id === Number(route.params.id)))
+const article = computed(() => communityStore.currentArticle)
+const loading = computed(() => communityStore.loading)
+const error = computed(() => communityStore.error)
+
+// 날짜 포맷팅 함수
+function formatDate(dateString) {
+  if (!dateString) return ''
+  
+  const date = new Date(dateString)
+  const now = new Date()
+  
+  // 유효하지 않은 날짜 체크
+  if (isNaN(date.getTime())) return '날짜 오류'
+  
+  // 시간 차이 계산 (밀리초)
+  const diffTime = now.getTime() - date.getTime()
+  
+  // 미래 날짜인 경우
+  if (diffTime < 0) {
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+  
+  // 분 단위 계산
+  const diffMinutes = Math.floor(diffTime / (1000 * 60))
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+  const diffWeeks = Math.floor(diffDays / 7)
+  const diffMonths = Math.floor(diffDays / 30)
+  
+  // 1분 미만
+  if (diffMinutes < 1) return '방금 전'
+  
+  // 1시간 미만
+  if (diffMinutes < 60) return `${diffMinutes}분 전`
+  
+  // 24시간 미만
+  if (diffHours < 24) return `${diffHours}시간 전`
+  
+  // 1일
+  if (diffDays === 1) return '어제'
+  
+  // 7일 미만
+  if (diffDays < 7) return `${diffDays}일 전`
+  
+  // 4주 미만
+  if (diffWeeks < 4) return `${diffWeeks}주 전`
+  
+  // 1개월 이상
+  if (diffMonths >= 1) return `${diffMonths}개월 전`
+  
+  // 기본값 (날짜 형식)
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
+
+// 컴포넌트 마운트 시 게시글 상세 정보 불러오기
+onMounted(() => {
+  const articleId = route.params.id
+  if (articleId) {
+    communityStore.fetchArticle(Number(articleId))
+  }
+})
 </script>
 
 <style scoped>
@@ -186,6 +273,23 @@ const article = ref(dummyArticles.find(a => a.article_id === Number(route.params
 
 .not-found p {
   font-size: 1.1rem;
+}
+
+.loading-container,
+.error-container {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-color);
+}
+
+.alert {
+  margin: 2rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
 /* 반응형 디자인 */
