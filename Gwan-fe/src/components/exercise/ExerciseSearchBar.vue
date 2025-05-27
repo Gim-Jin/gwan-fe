@@ -21,7 +21,7 @@
       <div class="col-md-6">
         <div class="d-flex gap-2">
           <select class="form-select" v-model="selectedSort" @change="handleSort">
-            <option value="">정렬 방식</option>
+            <option value="">최신 순</option>
             <option value="likes">좋아요 순</option>
           </select>
           <select class="form-select" v-model="selectedTarget" @change="handleTarget">

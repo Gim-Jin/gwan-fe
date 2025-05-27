@@ -71,7 +71,7 @@
             <input 
               type="text" 
               class="form-control" 
-              placeholder="사용자 이름, 이메일로 검색..."
+              placeholder="닉네임으로 검색"
               v-model="searchQuery"
               @input="handleSearch"
             />
