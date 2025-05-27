@@ -61,6 +61,10 @@
         
         <div class="article-stats">
           <div class="stat-item">
+            <i class="bi bi-hand-thumbs-up"></i>
+            <span>{{ article.recommentCount || 0 }}</span>
+          </div>
+          <div class="stat-item">
             <i class="bi bi-chat-dots"></i>
             <span>{{ article.reviewCount || 0 }}</span>
           </div>

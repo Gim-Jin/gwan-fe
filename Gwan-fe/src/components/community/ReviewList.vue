@@ -132,8 +132,14 @@ function canDeleteReview(review) {
   if (currentUser.role === 'ADMIN') return true
   
   // 본인이 작성한 댓글인 경우 삭제 가능
-  if (currentUser.id && review.userId && currentUser.id === review.userId) {
-    return true
+  // 사용자 ID로 비교
+  if (currentUser.id && review.userId) {
+    return currentUser.id === review.userId
+  }
+  
+  // userId가 없는 경우 닉네임으로 비교 (fallback)
+  if (currentUser.nickname && review.writerNickName) {
+    return currentUser.nickname === review.writerNickName
   }
   
   return false

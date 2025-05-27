@@ -41,6 +41,13 @@
       
       <div class="article-content">{{ article.content }}</div>
       
+      <div class="article-actions">
+        <RecommendButton 
+          :article="article" 
+          :isAuthenticated="isAuthenticatedValue" 
+          v-model:isRecommended="isArticleRecommended"
+        />
+      </div>
 
     </div>
 
@@ -60,13 +67,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCommunityStore } from '@/stores/communityStore'
 import { useAuthStore } from '@/stores/auth'
+import { isRecommended } from '@/api/community'
 
 import CommentList from './ReviewList.vue'
 import CommentForm from './ReviewForm.vue'
+import RecommendButton from './RecommendButton.vue'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -76,6 +85,20 @@ const isAuthenticatedValue = computed(() => authStore.isAuthenticated)
 const article = computed(() => communityStore.currentArticle)
 const loading = computed(() => communityStore.loading)
 const error = computed(() => communityStore.error)
+const isArticleRecommended = ref(false)
+
+// 추천 여부 확인
+const checkIsRecommended = async () => {
+  if (!isAuthenticatedValue.value || !article.value) {
+    isArticleRecommended.value = false
+    return
+  }
+  try {
+    isArticleRecommended.value = await isRecommended(article.value.articleId || article.value.id)
+  } catch {
+    isArticleRecommended.value = false
+  }
+}
 
 // 날짜 포맷팅 함수
 function formatDate(dateString) {
@@ -141,11 +164,22 @@ function handleReviewDeleted(deletedId) {
 }
 
 // 컴포넌트 마운트 시 게시글 상세 정보 불러오기
-onMounted(() => {
+onMounted(async () => {
   const articleId = route.params.id
   if (articleId) {
-    communityStore.fetchArticle(Number(articleId))
+    await communityStore.fetchArticle(Number(articleId))
+    await checkIsRecommended()
   }
+})
+
+// article이 변경될 때마다 추천 여부 확인
+watch(() => article.value, async () => {
+  await checkIsRecommended()
+})
+
+// 인증 상태가 변경될 때마다 추천 여부 확인
+watch(() => isAuthenticatedValue.value, async () => {
+  await checkIsRecommended()
 })
 </script>
 

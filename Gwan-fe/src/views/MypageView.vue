@@ -44,14 +44,16 @@
   import LikedVideos from '@/components/mypage/LikeVideos.vue'
   import MyComments from '@/components/mypage/MyComments.vue'
   import MyRoutines from '@/components/mypage/MyRoutines.vue'
+  import LikedArticles from '@/components/mypage/LikedArticles.vue'
 //   import MyInfo from '@/components/mypage/MyInfo.vue'
   
   const router = useRouter()
-  const tabs = ['찜한 영상', '내 댓글', '운동 루틴']
+  const tabs = ['찜한 영상', '좋아요', '내 댓글', '운동 루틴']
   const currentTab = ref('찜한 영상')
   
   const compMap = {
     '찜한 영상': LikedVideos,
+    '좋아요': LikedArticles,
     '내 댓글'  : MyComments,
     '운동 루틴': MyRoutines
   }
