@@ -9,10 +9,10 @@
       <div class="d-flex justify-content-center mb-3 gap-4">
         <div>
           <span class="fw-bold text-primary" style="font-size: 1.3rem;">{{ user.videoCnt }}</span>
-          <div class="small text-secondary">운동</div>
+          <div class="small text-secondary">좋아요</div>
         </div>
         <div>
-          <span class="fw-bold text-primary" style="font-size: 1.3rem;">{{ user.commentCnt }}</span>
+          <span class="fw-bold text-primary" style="font-size: 1.3rem;">{{ totalCommentsCount }}</span>
           <div class="small text-secondary">댓글</div>
         </div>
       </div>
@@ -22,17 +22,43 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps, computed, onMounted, ref } from 'vue'
 import ProfileAvatar from '@/components/common/ProfileAvatar.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useCommentStore } from '@/stores/commentStore'
 
 const authStore = useAuthStore()
+const commentStore = useCommentStore()
 
 const props = defineProps({
   user: {
     type: Object,
     required: true
   }
+})
+
+// 게시글 댓글 수
+const articleCommentsCount = ref(0)
+
+// 총 댓글 수 계산 (비디오 댓글 + 게시글 댓글)
+const totalCommentsCount = computed(() => {
+  const videoComments = props.user.commentCnt || 0
+  return videoComments + articleCommentsCount.value
+})
+
+// 게시글 댓글 수 로드
+const loadArticleCommentsCount = async () => {
+  try {
+    const reviews = await commentStore.getMyReviews()
+    articleCommentsCount.value = reviews.length
+  } catch (error) {
+    console.error('게시글 댓글 수 로드 실패:', error)
+    articleCommentsCount.value = 0
+  }
+}
+
+onMounted(() => {
+  loadArticleCommentsCount()
 })
 
 // 사용자 타입을 결정하는 함수
