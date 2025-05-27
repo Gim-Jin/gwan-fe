@@ -39,12 +39,13 @@
           <button
             type="submit"
             class="btn btn-primary"
-            :disabled="!isAuthenticated || !title.trim() || !content.trim()"
+            :disabled="!isAuthenticated || !title.trim() || !content.trim() || submitLoading"
           >
-            <i class="bi bi-check-lg"></i>
-            {{ isEdit ? '수정 완료' : '작성 완료' }}
+            <span v-if="submitLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <i v-else class="bi bi-check-lg"></i>
+            {{ submitLoading ? '저장 중...' : (isEdit ? '수정 완료' : '작성 완료') }}
           </button>
-          <button type="button" class="btn btn-secondary" @click="goList">
+          <button type="button" class="btn btn-secondary" @click="goList" :disabled="submitLoading">
             <i class="bi bi-x-lg"></i>
             취소
           </button>
@@ -55,46 +56,112 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { dummyArticles } from '@/stores/communityDummy'
+import { useCommunityStore } from '@/stores/communityStore'
 import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
-const isAuthenticated = authStore.isAuthenticated
-const isEdit = computed(() => route.name === 'ArticleEdit')
-const article = isEdit.value ? dummyArticles.find(a => a.article_id === Number(route.params.id)) : null
-const title = ref(article ? article.title : '')
-const content = ref(article ? article.content : '')
+const communityStore = useCommunityStore()
 
-function submit() {
-  if (!title.value.trim() || !content.value.trim()) return
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+const isEdit = computed(() => route.name === 'ArticleEdit')
+const loading = computed(() => communityStore.loading)
+const error = computed(() => communityStore.error)
+
+const title = ref('')
+const content = ref('')
+const submitLoading = ref(false)
+
+const submit = async () => {
+  // 로그인 체크
+  if (!isAuthenticated.value) {
+    alert('로그인 후 게시글을 작성할 수 있습니다.')
+    router.push({ name: 'login' })
+    return
+  }
   
-  if (isEdit.value && article) {
-    article.title = title.value
-    article.content = content.value
-    article.updated_at = new Date().toISOString().slice(0, 16).replace('T', ' ')
-    router.push({ name: 'ArticleDetail', params: { id: article.article_id } })
-  } else {
-    const newId = (dummyArticles.at(-1)?.article_id || 0) + 1
-    dummyArticles.push({
-      article_id: newId,
-      title: title.value,
-      content: content.value,
-      created_at: new Date().toISOString().slice(0, 16).replace('T', ' '),
-      updated_at: new Date().toISOString().slice(0, 16).replace('T', ' '),
-      recommends: [],
-      comments: []
-    })
-    router.push({ name: 'ArticleDetail', params: { id: newId } })
+  if (!title.value.trim() || !content.value.trim()) {
+    alert('제목과 내용을 모두 입력해주세요.')
+    return
+  }
+  
+  submitLoading.value = true
+  
+  try {
+    const articleData = {
+      title: title.value.trim(),
+      content: content.value.trim()
+    }
+    
+    if (isEdit.value) {
+      const articleId = Number(route.params.id)
+      const updatedArticle = await communityStore.editArticle(articleId, articleData)
+      console.log('수정된 게시글:', updatedArticle)
+      const id = updatedArticle.articleId || updatedArticle.id
+      if (!id) {
+        throw new Error('게시글 ID를 찾을 수 없습니다.')
+      }
+      router.push({ name: 'ArticleDetail', params: { id } })
+    } else {
+      const newArticle = await communityStore.addArticle(articleData)
+      
+      // 서버에서 ID를 반환하지 않는 경우 목록 페이지로 이동
+      const id = newArticle.articleId || newArticle.id
+      if (id) {
+        router.push({ name: 'ArticleDetail', params: { id } })
+      } else {
+        // ID가 없으면 목록 페이지로 이동하고 성공 메시지 표시
+        alert('게시글이 성공적으로 작성되었습니다!')
+        router.push({ name: 'ArticleList' })
+      }
+    }
+  } catch (err) {
+    console.error('게시글 저장 실패:', err)
+    
+    // 401 에러인 경우 로그인 페이지로 리다이렉트
+    if (err.response?.status === 401) {
+      alert('로그인이 필요합니다.')
+      router.push({ name: 'login' })
+      return
+    }
+    
+    alert(err.response?.data?.message || '게시글 저장에 실패했습니다.')
+  } finally {
+    submitLoading.value = false
   }
 }
 
 function goList() {
   router.push({ name: 'ArticleList' })
 }
+
+// 편집 모드일 때 기존 게시글 데이터 불러오기
+onMounted(async () => {
+  // 로그인 체크 (라우터 가드가 있지만 추가 보안)
+  if (!isAuthenticated.value) {
+    alert('로그인이 필요한 페이지입니다.')
+    router.push({ name: 'login' })
+    return
+  }
+  
+  if (isEdit.value) {
+    const articleId = Number(route.params.id)
+    try {
+      const article = await communityStore.fetchArticle(articleId)
+      if (article) {
+        title.value = article.title || ''
+        content.value = article.content || ''
+      }
+    } catch (err) {
+      console.error('게시글 불러오기 실패:', err)
+      alert('게시글을 불러오는데 실패했습니다.')
+      router.push({ name: 'ArticleList' })
+    }
+  }
+})
 </script>
 
 <style scoped>

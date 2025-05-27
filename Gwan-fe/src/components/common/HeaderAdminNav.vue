@@ -5,9 +5,9 @@
       <nav class="nav-menu">
         <RouterLink :to="{name : 'home'}"><i class="bi bi-house text-primary icon-large"></i> 홈</RouterLink>
         <RouterLink :to="{name : 'exercises'}"><i class="bi bi-lightning-charge text-danger icon-large"></i> 운동</RouterLink>
-        <RouterLink :to="{name : 'community'}"><i class="bi bi-people text-success icon-large"></i> 커뮤니티</RouterLink>
+        <RouterLink :to="{name : 'article'}"><i class="bi bi-people text-success icon-large"></i> 커뮤니티</RouterLink>
         <RouterLink :to="{name : 'myRoutine'}"><i class="bi bi-trophy text-warning icon-large"></i> 나의 루틴</RouterLink>
-        <RouterLink :to="{name : 'adminManagement'}"><i class="bi bi-person-gear text-info icon-large"></i> 유저관리</RouterLink>
+        <RouterLink :to="{name : 'adminManagement'}"><i class="bi bi-person-gear text-info icon-large"></i>관리자 페이지</RouterLink>
       </nav>
     </div>
 

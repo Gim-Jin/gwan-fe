@@ -11,7 +11,25 @@
       </button>
     </div>
     
-    <div v-if="articles.length === 0" class="empty-state">
+    <!-- 로딩 상태 -->
+    <div v-if="loading" class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">불러오는 중...</span>
+      </div>
+      <p class="mt-2">게시글을 불러오는 중...</p>
+    </div>
+
+    <!-- 에러 상태 -->
+    <div v-else-if="error" class="alert alert-danger">
+      <i class="bi bi-exclamation-triangle"></i>
+      {{ error }}
+      <button @click="communityStore.fetchArticles()" class="btn btn-outline-danger btn-sm ms-2">
+        다시 시도
+      </button>
+    </div>
+    
+    <!-- 빈 상태 -->
+    <div v-else-if="articles.length === 0" class="empty-state">
       <i class="bi bi-inbox"></i>
       <h3>아직 게시글이 없습니다</h3>
       <p>첫 번째 게시글을 작성해보세요!</p>
@@ -20,35 +38,31 @@
       </button>
     </div>
     
-    <transition-group name="list" tag="div" class="article-grid">
+    <transition-group name="list" tag="div" class="article-grid" v-else>
       <article
         v-for="article in articles"
-        :key="article.article_id"
+        :key="article.articleId || article.id"
         class="article-card"
-        @click="goDetail(article.article_id)"
+        @click="goDetail(article.articleId || article.id)"
       >
         <div class="article-content">
           <h2 class="article-title">{{ article.title }}</h2>
           <div class="article-meta">
             <div class="meta-item">
               <i class="bi bi-person"></i>
-              <span>로그인 유저</span>
+              <span>{{ article.userName || '익명' }}</span>
             </div>
             <div class="meta-item">
               <i class="bi bi-calendar3"></i>
-              <span>{{ formatDate(article.created_at) }}</span>
+              <span>{{ formatDate(article.createAt || article.createdAt) }}</span>
             </div>
           </div>
         </div>
         
         <div class="article-stats">
           <div class="stat-item">
-            <i class="bi bi-hand-thumbs-up"></i>
-            <span>{{ article.recommends.length }}</span>
-          </div>
-          <div class="stat-item">
             <i class="bi bi-chat-dots"></i>
-            <span>{{ article.comments.length }}</span>
+            <span>{{ article.reviews?.length || 0 }}</span>
           </div>
         </div>
       </article>
@@ -57,17 +71,26 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { dummyArticles } from '@/stores/communityDummy'
+import { useCommunityStore } from '@/stores/communityStore'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const isAuthenticated = authStore.isAuthenticated
-const articles = ref(dummyArticles)
+const communityStore = useCommunityStore()
+
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+const articles = computed(() => communityStore.articles)
+const loading = computed(() => communityStore.loading)
+const error = computed(() => communityStore.error)
 
 function goWrite() {
+  if (!isAuthenticated.value) {
+    alert('로그인 후 게시글을 작성할 수 있습니다.')
+    router.push({ name: 'login' })
+    return
+  }
   router.push({ name: 'ArticleWrite' })
 }
 
@@ -76,21 +99,66 @@ function goDetail(id) {
 }
 
 function formatDate(dateString) {
+  if (!dateString) return ''
+  
   const date = new Date(dateString)
   const now = new Date()
-  const diffTime = Math.abs(now - date)
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   
-  if (diffDays === 0) return '오늘'
+  // 유효하지 않은 날짜 체크
+  if (isNaN(date.getTime())) return '날짜 오류'
+  
+  // 시간 차이 계산 (밀리초)
+  const diffTime = now.getTime() - date.getTime()
+  
+  // 미래 날짜인 경우
+  if (diffTime < 0) {
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+  
+  // 분 단위 계산
+  const diffMinutes = Math.floor(diffTime / (1000 * 60))
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60))
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+  const diffWeeks = Math.floor(diffDays / 7)
+  const diffMonths = Math.floor(diffDays / 30)
+  
+  // 1분 미만
+  if (diffMinutes < 1) return '방금 전'
+  
+  // 1시간 미만
+  if (diffMinutes < 60) return `${diffMinutes}분 전`
+  
+  // 24시간 미만
+  if (diffHours < 24) return `${diffHours}시간 전`
+  
+  // 1일
   if (diffDays === 1) return '어제'
+  
+  // 7일 미만
   if (diffDays < 7) return `${diffDays}일 전`
   
+  // 4주 미만
+  if (diffWeeks < 4) return `${diffWeeks}주 전`
+  
+  // 1개월 이상
+  if (diffMonths >= 1) return `${diffMonths}개월 전`
+  
+  // 기본값 (날짜 형식)
   return date.toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   })
 }
+
+// 컴포넌트 마운트 시 게시글 목록 불러오기
+onMounted(() => {
+  communityStore.fetchArticles()
+})
 </script>
 
 <style scoped>
@@ -187,6 +255,21 @@ function formatDate(dateString) {
 
 .write-btn-empty:hover {
   background: var(--primary-hover-color);
+}
+
+.loading-container {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-color);
+}
+
+.alert {
+  margin: 2rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .article-grid {

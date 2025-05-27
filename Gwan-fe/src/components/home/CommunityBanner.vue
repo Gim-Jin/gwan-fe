@@ -14,7 +14,7 @@
           <li>효과적인 운동 찾기</li>
           <li>건강한 생활 습관 형성</li>
         </ul>
-        <RouterLink :to="{name : 'community'}" class="btn btn-primary btn-lg">커뮤니티 방문하기</RouterLink>
+        <RouterLink :to="{name : 'article'}" class="btn btn-primary btn-lg">커뮤니티 방문하기</RouterLink>
       </div>
     </div>
   </section>

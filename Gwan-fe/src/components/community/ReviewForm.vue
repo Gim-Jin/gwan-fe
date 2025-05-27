@@ -1,5 +1,5 @@
 <template>
-  <form class="comment-form" @submit.prevent="submitComment">
+  <form class="review-form" @submit.prevent="submitReview">
     <div class="form-wrapper">
       <div class="avatar-placeholder">
         <i class="bi bi-person-circle"></i>
@@ -9,7 +9,7 @@
           v-model="content"
           :disabled="!isAuthenticated"
           :placeholder="isAuthenticated ? '댓글을 입력하세요...' : '로그인 후 댓글을 작성할 수 있습니다.'"
-          @keydown.enter.ctrl="submitComment"
+          @keydown.enter.ctrl="submitReview"
           rows="1"
           ref="textareaRef"
           @input="adjustHeight"
@@ -20,11 +20,12 @@
           </span>
           <button
             type="submit"
-            :disabled="!isAuthenticated || !content.trim()"
+            :disabled="!isAuthenticated || !content.trim() || isSubmitting"
             class="submit-btn"
           >
-            <i class="bi bi-send"></i>
-            등록
+            <span v-if="isSubmitting" class="spinner-border spinner-border-sm" role="status"></span>
+            <i v-else class="bi bi-send"></i>
+            {{ isSubmitting ? '등록 중...' : '등록' }}
           </button>
         </div>
       </div>
@@ -34,14 +35,17 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
+import { useCommunityStore } from '@/stores/communityStore'
 
 const props = defineProps({
   article: Object,
   isAuthenticated: Boolean
 })
 
+const communityStore = useCommunityStore()
 const content = ref('')
 const textareaRef = ref(null)
+const isSubmitting = ref(false)
 
 function adjustHeight() {
   const textarea = textareaRef.value
@@ -51,24 +55,44 @@ function adjustHeight() {
   }
 }
 
-async function submitComment() {
-  if (!content.value.trim() || !props.isAuthenticated) return
+async function submitReview() {
+  if (!content.value.trim() || isSubmitting.value) return
   
-  const newId = (props.article.comments.at(-1)?.review_id || 0) + 1
-  props.article.comments.push({
-    review_id: newId,
-    content: content.value,
-    created_at: new Date().toISOString().slice(0, 16).replace('T', ' ')
-  })
+  // 로그인 체크
+  if (!props.isAuthenticated) {
+    alert('로그인 후 댓글을 작성할 수 있습니다.')
+    return
+  }
   
-  content.value = ''
-  await nextTick()
-  adjustHeight()
+  isSubmitting.value = true
+  
+  try {
+    await communityStore.addComment(props.article.articleId || props.article.id, {
+      content: content.value.trim()
+    })
+    
+    content.value = ''
+    await nextTick()
+    adjustHeight()
+  } catch (error) {
+    console.error('댓글 작성 실패:', error)
+    
+    // 401 에러인 경우 로그인 페이지로 리다이렉트
+    if (error.response?.status === 401) {
+      alert('로그인이 필요합니다.')
+      window.location.href = '/login'
+      return
+    }
+    
+    alert('댓글 작성에 실패했습니다.')
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
 <style scoped>
-.comment-form {
+.review-form {
   margin-top: 1.5rem;
   animation: fadeIn 0.3s ease-out;
 }
