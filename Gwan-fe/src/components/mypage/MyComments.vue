@@ -87,7 +87,7 @@
       </div>
       <ArticleReviewCard
         v-for="review in articleComments"
-        :key="`article-${review.reviewId}`"
+        :key="`article-${review.reviewId || review.id}`"
         :review="review"
         @update="handleReviewUpdate"
         @delete="handleReviewDelete"
@@ -100,8 +100,10 @@
 import { useCommentStore } from '@/stores/commentStore';
 import { computed, onMounted, ref } from 'vue';
 import ArticleReviewCard from '@/components/community/ArticleReviewCard.vue';
+import { useCommunityStore } from '@/stores/communityStore'
 
 const commentStore = useCommentStore();
+const communityStore = useCommunityStore()
 
 // 탭 상태
 const activeTab = ref('video');
@@ -212,15 +214,17 @@ const handleReviewUpdate = async (data) => {
 
 const handleReviewDelete = async (reviewId) => {
   try {
-    // TODO: 게시글 댓글 삭제 API 호출
-    console.log('게시글 댓글 삭제:', reviewId);
-    // 삭제 후 목록 새로고침
-    await loadArticleComments();
+    const review = articleComments.value.find(r => (r.reviewId || r.id) === reviewId)
+    if (!review) return alert('리뷰 정보를 찾을 수 없습니다.')
+    await communityStore.removeComment(review.articleId, reviewId)
+    // 프론트 상태에서 바로 제거
+    articleComments.value = articleComments.value.filter(r => (r.reviewId || r.id) !== reviewId)
+    await loadArticleComments() // 필요시 주석 해제
   } catch (error) {
-    console.error('게시글 댓글 삭제 실패:', error);
-    alert('댓글 삭제에 실패했습니다.');
+    console.error('게시글 댓글 삭제 실패:', error)
+    alert('댓글 삭제에 실패했습니다.')
   }
-};
+}
 
 // 비디오 댓글 취소 함수
 const cancelEditing = () => {
