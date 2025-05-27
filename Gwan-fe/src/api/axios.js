@@ -30,21 +30,6 @@ const processQueue = (error, token = null) => {
     failedQueue = [];
 };
 
-// 요청 인터셉터 (요청 전 처리)
-instance.interceptors.request.use(
-    (config) => {
-        // 요청 로그 출력
-        console.log('[AXIOS REQUEST]', {
-            url: config.url,
-            method: config.method,
-            data: config.data,
-            params: config.params,
-            headers: config.headers
-        });
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
 
 // 응답 인터셉터 (에러 응답 처리 등)
 instance.interceptors.response.use(
