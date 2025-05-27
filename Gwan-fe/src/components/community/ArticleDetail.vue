@@ -49,7 +49,7 @@
         <i class="bi bi-chat-square-text"></i>
         댓글
       </h3>
-      <CommentList :reviews="article.reviews || []" :isAuthenticated="isAuthenticatedValue" :article="article" />
+      <CommentList :reviews="article.reviews || []" :isAuthenticated="isAuthenticatedValue" :article="article" @deleted="handleReviewDeleted" />
       <CommentForm :article="article" :isAuthenticated="isAuthenticatedValue" />
     </div>
   </div>
@@ -133,6 +133,11 @@ function formatDate(dateString) {
     month: 'long',
     day: 'numeric'
   })
+}
+
+function handleReviewDeleted(deletedId) {
+  if (!article.value || !article.value.reviews) return
+  article.value.reviews = article.value.reviews.filter(r => (r.reviewId || r.id) !== deletedId)
 }
 
 // 컴포넌트 마운트 시 게시글 상세 정보 불러오기

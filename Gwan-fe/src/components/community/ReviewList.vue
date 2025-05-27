@@ -48,6 +48,7 @@ const props = defineProps({
 
 const communityStore = useCommunityStore()
 const authStore = useAuthStore()
+const emit = defineEmits(['deleted'])
 
 function formatDate(dateString) {
   if (!dateString) return ''
@@ -146,10 +147,16 @@ async function deleteReview(review) {
       props.article.articleId || props.article.id, 
       review.reviewId || review.id
     )
+    // 삭제 성공 시 부모에게 알림
+    emit('deleted', review.reviewId || review.id)
   } catch (error) {
     console.error('댓글 삭제 실패:', error)
     alert('댓글 삭제에 실패했습니다.')
   }
+}
+
+function handleReviewDeleted(deletedId) {
+  props.article.reviews = props.article.reviews.filter(r => (r.reviewId || r.id) !== deletedId)
 }
 </script>
 

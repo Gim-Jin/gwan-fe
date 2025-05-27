@@ -216,7 +216,7 @@ const saveEdit = async () => {
 const handleDelete = async () => {
   if (confirm('댓글을 삭제하시겠습니까?')) {
     try {
-      emit('delete', props.review.reviewId)
+      emit('delete', props.review.reviewId || props.review.id)
     } catch (error) {
       alert('댓글 삭제에 실패했습니다.')
     }
