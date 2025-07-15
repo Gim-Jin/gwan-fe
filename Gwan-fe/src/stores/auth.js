@@ -16,38 +16,84 @@ export const useAuthStore = defineStore('auth', () => {
   // 사용자 정보 조회
   const fetchUserInfo = async () => {
     try {
-      const response = await api.get('/api/auth/me')
+      console.log('fetchUserInfo 시작...')
       
-      // 다양한 응답 구조에 대응
-      if (response.data) {
+      // 먼저 /api/auth/me로 역할 정보 조회
+      const response = await api.get('/api/auth/me')
+      console.log('auth/me 응답:', response.data)
+      
+      if (response.data && response.data.success) {
         let role = 'GENERAL' // 기본값
         
-        // 케이스 1: { success: true, data: "ADMIN" }
-        if (response.data.success && response.data.data) {
+        // 케이스 1: { success: true, data: "GENERAL" } - 스크린샷에서 확인된 구조
+        if (response.data.data && typeof response.data.data === 'string') {
           role = response.data.data
-        }
-        // 케이스 2: { role: "ADMIN" } 직접 구조
-        else if (response.data.role) {
-          role = response.data.role
-        }
-        // 케이스 3: { data: { role: "ADMIN" } } 중첩 구조
-        else if (response.data.data && typeof response.data.data === 'object' && response.data.data.role) {
-          role = response.data.data.role
+          console.log('역할 추출 성공:', role)
         }
         
-        user.value = {
-          role: role.toUpperCase()
+        // /api/user로 상세 정보 조회
+        try {
+          const userResponse = await api.get('/api/user')
+          console.log('user 응답:', userResponse.data)
+          
+          if (userResponse.data && userResponse.data.success && userResponse.data.data) {
+            const userData = userResponse.data.data
+            user.value = {
+              id: userData.userId,
+              nickname: userData.nickName || userData.nickname,
+              email: userData.email,
+              loginId: userData.loginId,
+              name: userData.name,
+              role: role.toUpperCase()
+            }
+            console.log('사용자 정보 설정 완료:', user.value)
+            accessToken.value = true
+            return true
+          }
+        } catch (userErr) {
+          console.error('/api/user 조회 실패:', userErr)
+          // 기본 정보만 설정
+          user.value = {
+            id: null,
+            nickname: null,
+            role: role.toUpperCase()
+          }
+          accessToken.value = true
+          return true
         }
-        
-        accessToken.value = true
-        return true
-      } else {
-        accessToken.value = false
-        user.value = null
-        return false
       }
+      
+      // 응답이 성공적이지 않은 경우
+      console.log('auth/me 응답이 성공적이지 않음:', response.data)
+      accessToken.value = false
+      user.value = null
+      return false
+      
     } catch (err) {
       console.error('사용자 정보 조회 실패:', err.response?.status, err.response?.data)
+      
+      // 401 에러가 아닌 경우에만 재시도 (네트워크 오류 등)
+      if (err.response?.status !== 401) {
+        try {
+          console.log('users/me로 재시도...')
+          const userResponse = await api.get('/api/users/me')
+          
+          if (userResponse.data && userResponse.data.success) {
+            const userData = userResponse.data.data
+            user.value = {
+              id: userData.id,
+              nickname: userData.nickname,
+              role: userData.role?.toUpperCase() || 'GENERAL'
+            }
+            console.log('users/me로 사용자 정보 설정:', user.value)
+            accessToken.value = true
+            return true
+          }
+        } catch (retryErr) {
+          console.error('users/me 재시도도 실패:', retryErr.response?.status, retryErr.response?.data)
+        }
+      }
+      
       accessToken.value = false
       user.value = null
       return false
@@ -65,24 +111,17 @@ export const useAuthStore = defineStore('auth', () => {
       
       // 로그인 응답에서 역할 정보 추출
       // 응답 형태: {"success":true,"code":200,"message":"요청 성공","data":"GENERAL"}
-      if (response.data && response.data.success && response.data.data) {
-        const role = response.data.data // "GENERAL", "ADMIN", "ADVISOR" 등
-        
-        user.value = {
-          role: role.toUpperCase()
-        }
+      if (response.data && response.data.success) {
         accessToken.value = true
-        localStorage.setItem('userRole', role.toUpperCase())
         
-        console.log('로그인 성공, 사용자 역할:', role)
+        // 로그인 후 상세 사용자 정보 조회
+        await fetchUserInfo()
+        
+        console.log('로그인 성공, 사용자 정보:', user.value)
         
         return response
       } else {
-        // 로그인은 성공했지만 역할 정보가 없는 경우
-        console.log('로그인 응답에 역할 정보가 없음, 사용자 정보 조회 시도')
-        await fetchUserInfo()
-        
-        return response
+        throw new Error('로그인 응답이 올바르지 않습니다.')
       }
     } catch (err) {
       error.value = err.response?.data?.message || '로그인에 실패했습니다'
@@ -128,19 +167,15 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       console.log('토큰 유효성 검사 시작...')
-      // 토큰 유효성 검사 및 role 확인
-      const response = await api.get('/api/auth/me')
-      console.log('토큰 유효성 검사 응답:', response.data)
       
-      if (response.data && response.data.success) {
-        const role = response.data.data || 'GENERAL'
-        user.value = { role: role.toUpperCase() }
-        accessToken.value = true
-        localStorage.setItem('userRole', role.toUpperCase())
+      // 사용자 정보 조회로 토큰 유효성 검사
+      const isValid = await fetchUserInfo()
+      
+      if (isValid) {
         console.log('사용자 정보 초기화 성공:', user.value)
         return
       } else {
-        console.log('토큰 유효성 검사 실패: success가 false')
+        console.log('토큰 유효성 검사 실패')
         accessToken.value = false
         user.value = null
         localStorage.removeItem('userRole')

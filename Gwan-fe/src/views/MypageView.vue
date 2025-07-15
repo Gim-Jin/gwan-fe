@@ -28,28 +28,37 @@
   
       <!-- 탭 내용 -->
       <div v-if="user" class="mt-4">
-        <LikedVideos v-if="currentTab === '찜한 영상'" />
-        <MyComments v-if="currentTab === '내 댓글'" />
-        <MyRoutines v-if="currentTab === '운동 루틴'" />
-        <!-- <MyInfo v-if="currentTab === '내 정보'" /> -->
+        <transition name="tab" mode="out-in">
+        <!-- key 로 currentTab 주면 매번 애니메이션 실행 -->
+          <component :is="currentComp" :key="currentTab" />
+        </transition>
       </div>
     </div>
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue'
+  import { ref, onMounted, computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { fetchMypage } from '@/api/user'
   import MyPageProfileCard from '@/components/mypage/MyPageProfileCard.vue'
   import LikedVideos from '@/components/mypage/LikeVideos.vue'
   import MyComments from '@/components/mypage/MyComments.vue'
   import MyRoutines from '@/components/mypage/MyRoutines.vue'
+  import LikedArticles from '@/components/mypage/LikedArticles.vue'
 //   import MyInfo from '@/components/mypage/MyInfo.vue'
   
   const router = useRouter()
-  const tabs = ['찜한 영상', '내 댓글', '운동 루틴']
+  const tabs = ['찜한 영상', '좋아요', '내 댓글', '운동 루틴']
   const currentTab = ref('찜한 영상')
   
+  const compMap = {
+    '찜한 영상': LikedVideos,
+    '좋아요': LikedArticles,
+    '내 댓글'  : MyComments,
+    '운동 루틴': MyRoutines
+  }
+
+  const currentComp = computed(() => compMap[currentTab.value])
   const user = ref(null)
   const error = ref(null)
   
@@ -75,4 +84,20 @@
     await fetchUserData()
   })
   </script>
+
+  <style>
+
+/* ---------- 탭 전환 애니메이션 ---------- */
+.tab-enter-from,
+.tab-leave-to   { opacity: 0; transform: translateY(20px); }
+
+.tab-enter-to,
+.tab-leave-from { opacity: 1; transform: translateY(0); }
+
+.tab-enter-active,
+.tab-leave-active {
+  transition: all 280ms cubic-bezier(.25,.8,.5,1);
+}
+
+</style>
   

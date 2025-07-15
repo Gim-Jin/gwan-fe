@@ -9,8 +9,16 @@
             <!-- 로그인 상태에 따라 헤더 렌더링 -->
             <HeaderNav v-if="!authStore.isAuthenticated" />
             <HeaderAdminNav v-else-if="currentUserRole === 'ADMIN'" />
+            <HeaderLoginedNav v-else-if="currentUserRole === 'GENERAL' || currentUserRole === 'PRESCRIBER'" />
             <HeaderLoginedNav v-else />
-            <main class="main-content"><router-view /></main>
+     
+            <main class="main-content">
+                <router-view v-slot="{ Component }">
+                <transition name="page" mode="out-in">
+                    <component :is="Component" :key="$route.fullPath" />
+                </transition>
+            </router-view>
+            </main>
             <Footer />
         </div>
     </div>
@@ -32,17 +40,23 @@ const isInitializing = ref(true)
 const isDevelopment = import.meta.env.DEV
 
 // 현재 사용자 역할을 computed로 관리
-const currentUserRole = computed(() => authStore.user?.role)
+const currentUserRole = computed(() => {
+    const role = authStore.user?.role
+    console.log('App.vue - currentUserRole computed:', role)
+    return role
+})
 
 // 인증 상태 변경 감지
 watch(() => authStore.isAuthenticated, (newValue) => {
-    console.log('인증 상태 변경 감지:', newValue)
-    console.log('현재 사용자 정보:', authStore.user)
+    console.log('App.vue - 인증 상태 변경 감지:', newValue)
+    console.log('App.vue - 현재 사용자 정보:', authStore.user)
+    console.log('App.vue - 현재 사용자 역할:', currentUserRole.value)
 })
 
 // 사용자 정보 변경 감지
 watch(() => authStore.user, (newValue) => {
-    console.log('사용자 정보 변경 감지:', newValue)
+    console.log('App.vue - 사용자 정보 변경 감지:', newValue)
+    console.log('App.vue - 계산된 역할:', currentUserRole.value)
 }, { deep: true })
 
 onMounted(async () => {
@@ -104,4 +118,23 @@ onMounted(async () => {
     html,body{
         caret-color: transparent;
     } */
+     /* ---------- 라우트 전환 애니메이션 ---------- */
+.page-enter-from,
+.page-leave-to   {       /* 초기/퇴장 상태 */
+  opacity: 0;
+  transform: translateY(20px);   /* 아래서 위로 슬라이드  */
+}
+
+.page-enter-to,
+.page-leave-from {       /* 최종/시작 상태 */
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 트랜지션 시간·곡선만 조절해도 느낌 확 달라져요 */
+.page-enter-active,
+.page-leave-active {
+  transition: all 350ms cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+
 </style>

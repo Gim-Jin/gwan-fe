@@ -4,7 +4,13 @@
       <h1 class="section-title fw-bold mb-4">전체 영상</h1>
 
       <!-- 검색 & 필터 -->
-      <ExerciseSearchBar />
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <ExerciseSearchBar />
+        <template v-if="isPrescriber">
+          <button class="btn btn-success mb-4" @click="showAddModal = true">+ 영상 추가</button>
+        </template>
+      </div>
+      <ExerciseVideoAddModal v-if="showAddModal" @close="showAddModal = false" @refresh="handleRefresh" />
 
       <!-- 영상 카드 그리드 -->
       <div class="row row-cols-2 row-cols-md-5 gx-4 gy-5">
@@ -36,12 +42,17 @@ import ExerciseThumbnailCard from './ExerciseThumbnailCard.vue';
 import { useExerciseVideoStore } from '@/stores/exerciseVideoStore';
 import ExerciseSearchBar from './ExerciseSearchBar.vue';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+import ExerciseVideoAddModal from './ExerciseVideoAddModal.vue';
 
 const exerciseVideoStore = useExerciseVideoStore();
 const route = useRoute();
+const authStore = useAuthStore();
 
 const currentPage = ref(1);
 const itemsPerPage = 10;
+const showAddModal = ref(false);
+const isPrescriber = computed(() => authStore.user?.role === 'PRESCRIBER');
 
 const fetchByTarget = () => {
   const target = route.query.target;
@@ -70,6 +81,10 @@ const goToPage = (page) => {
     currentPage.value = page;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+};
+
+const handleRefresh = () => {
+  exerciseVideoStore.getAllExerciseVideoList();
 };
 </script>
 

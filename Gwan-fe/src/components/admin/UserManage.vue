@@ -109,7 +109,6 @@
             <label for="editUserRole">역할</label>
             <select id="editUserRole" v-model="editingUser.role">
               <option value="GENERAL">일반 사용자</option>
-              <option value="ADVISOR">처방사</option>
               <option value="PRESCRIBER">처방사</option>
               <option value="ADMIN">관리자</option>
             </select>

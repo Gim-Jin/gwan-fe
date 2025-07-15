@@ -41,6 +41,17 @@ export const useCommentStore = defineStore('comment', () => {
       })
   }
 
+  // 마이페이지용 게시글 댓글 조회
+  const getMyReviews = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/users/reviews`, {withCredentials: true})
+      return response.data.data;
+    } catch (error) {
+      console.error('게시글 댓글 조회 실패:', error)
+      return [];
+    }
+  }
+
   // 비디오 페이지용 댓글 삭제
   const deleteComment = async (videoId, commentId) => {
     try {
@@ -96,7 +107,8 @@ export const useCommentStore = defineStore('comment', () => {
     myComments,
     getComments, 
     saveComment, 
-    getMyComments, 
+    getMyComments,
+    getMyReviews,
     deleteComment,
     removeComment, 
     updateComment,

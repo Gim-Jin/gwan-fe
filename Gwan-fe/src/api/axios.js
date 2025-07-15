@@ -3,7 +3,8 @@
 import axios from 'axios'
 
 // .env에서 baseURL을 가져옵니다 (VITE_ 접두사 주의)
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+// 환경 변수가 없으면 기본값 사용
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 const instance = axios.create({
     baseURL: baseURL, 
@@ -29,21 +30,6 @@ const processQueue = (error, token = null) => {
     failedQueue = [];
 };
 
-// 요청 인터셉터 (요청 전 처리)
-instance.interceptors.request.use(
-    (config) => {
-        // 요청 로그 출력
-        console.log('[AXIOS REQUEST]', {
-            url: config.url,
-            method: config.method,
-            data: config.data,
-            params: config.params,
-            headers: config.headers
-        });
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
 
 // 응답 인터셉터 (에러 응답 처리 등)
 instance.interceptors.response.use(

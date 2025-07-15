@@ -68,8 +68,47 @@ const router = createRouter({
       name: 'adminManagement',
       component: AdminManagement,
       meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/article',
+      name: 'article',
+      component: () => import('@/views/CommunityView.vue'),
+      redirect: { name: 'ArticleList' },
+      children: [
+        {
+          path: '',
+          name: 'ArticleList',
+          component: () => import('@/components/community/ArticleList.vue'),
+        },
+        {
+          path: 'write',
+          name: 'ArticleWrite',
+          component: () => import('@/components/community/ArticleForm.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: ':id',
+          name: 'ArticleDetail',
+          component: () => import('@/components/community/ArticleDetail.vue'),
+        },
+        {
+          path: ':id/edit',
+          name: 'ArticleEdit',
+          component: () => import('@/components/community/ArticleForm.vue'),
+          meta: { requiresAuth: true }
+        },
+      ]
     }
-  ],
+  ],  
+  scrollBehavior(to, from, savedPosition) {
+    // 브라우저 뒤/앞 버튼이면 savedPosition이 있으니 그대로 복원
+    if (savedPosition) return savedPosition
+
+    // 그 외에는 항상 화면 맨 위로
+    // { top: 0 } → 수직 0,  { left: 0, top: 0 } 로 써도 동일
+    return { top: 0 }
+  }
+  
 })
 
 // 인증이 필요한 라우트에 대한 가드 추가

@@ -15,8 +15,7 @@
         <input v-model="form.name" disabled class="disabled-input" />
       </div>
       <div class="form-group">
-        <label>권한</label>
-        <input v-model="form.role" disabled class="disabled-input" />
+        <input type="hidden" v-model="form.role" disabled class="disabled-input" />
       </div>
       <div class="form-group">
         <label>닉네임</label>

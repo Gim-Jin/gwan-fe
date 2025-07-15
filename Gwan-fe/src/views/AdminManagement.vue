@@ -1,12 +1,15 @@
 <template>
-  <div class="container my-5">
+  <div class="admin-page">
+    <div class="container my-5">
     <!-- 관리자 대시보드 헤더 -->
     <div class="admin-header mb-4">
       <div class="d-flex align-items-center mb-3">
         <i class="bi bi-person-gear me-3" style="font-size: 2rem; color: #FF8A65;"></i>
-        <h2 class="mb-0" style="color: #3A3A3A;">관리자 페이지</h2>
+        <div>
+          <h2 class="mb-0" style="color: #3A3A3A;">관리자 페이지</h2>
+          <p class="text-muted mb-0">등록된 사용자들을 관리하고 모니터링할 수 있습니다.</p>
+        </div>
       </div>
-      <p class="text-muted">등록된 사용자들을 관리하고 모니터링할 수 있습니다.</p>
     </div>
 
     <!-- 통계 카드 -->
@@ -68,7 +71,7 @@
             <input 
               type="text" 
               class="form-control" 
-              placeholder="사용자 이름, 이메일로 검색..."
+              placeholder="닉네임으로 검색"
               v-model="searchQuery"
               @input="handleSearch"
             />
@@ -97,6 +100,7 @@
       @user-deleted="handleUserDeleted"
       @refresh-users="fetchUsers"
     />
+    </div>
   </div>
 </template>
 
@@ -191,6 +195,11 @@ export default {
 </script>
 
 <style scoped>
+.admin-page {
+  min-height: calc(100vh - 120px); /* 헤더와 푸터 높이를 고려한 최소 높이 */
+  padding-bottom: 2rem;
+}
+
 .admin-header {
   background: linear-gradient(135deg, #FFF7F0 0%, #ffffff 100%);
   padding: 2rem;
